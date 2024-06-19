@@ -65,17 +65,17 @@ return {
         {
           view = 'split',
           filter = {
-            event = { 'msg_show', 'noice' },
+            event = { 'msg_show' },
             min_height = 20,
           },
         },
       },
       messages = {
         enabled = true,
-        view = 'notify',
-        view_error = 'notify',
-        view_warn = 'notify',
-        view_history = 'messages',
+        view = 'mini',
+        view_error = 'messages',
+        view_warn = 'messages',
+        view_history = 'mini',
         view_search = 'virtualtext',
         opts = {},
       },

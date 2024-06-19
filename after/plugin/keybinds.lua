@@ -5,8 +5,8 @@ vim.keymap.set('n', '<C-Down>', '<C-w><C-j>', { desc = 'Move focus to the lower 
 vim.keymap.set('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Keep cursor centered when PgUp & PgDown
-vim.keymap.set({ 'n', 'i', 'v' }, '<PageUp>', '<PageUp>zz', { desc = 'Page up' })
-vim.keymap.set({ 'n', 'i', 'v' }, '<PageDown>', '<PageDown>zz', { desc = 'Page down' })
+vim.keymap.set({ 'n', 'i', 'v' }, '<PageUp>', '<PageUp><CMD>normal zz<CR>', { desc = 'Page up' })
+vim.keymap.set({ 'n', 'i', 'v' }, '<PageDown>', '<PageDown><CMD>normal zz<CR>', { desc = 'Page down' })
 
 -- Redirect command output and allow edit
 vim.keymap.set('c', '<S-CR>', function()
