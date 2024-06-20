@@ -7,6 +7,33 @@ return {
     },
     event = 'VeryLazy',
     opts = {
+      cmdline = {
+        enabled = true,
+        view = 'cmdline_popup',
+        opts = {},
+        format = {
+          lua = {
+            pattern = {
+              '^:%s*lua%s+',
+              '^:%s*lua%s*=%s*',
+              '^:%s*=%s*',
+              '^:%s*I%s+',
+            },
+            icon = '',
+            lang = 'lua',
+          },
+        },
+      },
+      messages = {
+        enabled = true,
+        view = 'notify',
+        view_error = 'notify',
+        view_warn = 'notify',
+        view_history = 'messages',
+        view_search = 'virtualtext',
+        opts = {},
+      },
+
       lsp = {
         signature = {
           enabled = false,
@@ -69,15 +96,6 @@ return {
             min_height = 20,
           },
         },
-      },
-      messages = {
-        enabled = true,
-        view = 'notify',
-        view_error = 'notify',
-        view_warn = 'notify',
-        view_history = 'messages',
-        view_search = 'virtualtext',
-        opts = {},
       },
       notify = {
         enabled = true,

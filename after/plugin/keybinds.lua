@@ -3,6 +3,7 @@ local map = vim.keymap.set
 -- The good 'ol keybinds
 map('n', '<C-s>', '<cmd>w<CR>', { noremap = true, silent = true, desc = 'File save' })
 map('n', '<C-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
+map('c', '<C-v>', '<cmd>p<CR>', { noremap = true, silent = true, desc = 'Command paste' })
 
 -- Move between windows with arrows
 map('n', '<C-Left>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
@@ -44,5 +45,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclarations')
     map('gic', builtin.lsp_incoming_calls, '[G]oto [I]ncoming [C]alls')
     map('goc', builtin.lsp_outgoing_calls, '[G]oto [O]utgoing [C]alls')
+
+    vim.keymap.set({ 'n', 'i' }, '<A-k>', vim.lsp.buf.hover)
   end,
 })

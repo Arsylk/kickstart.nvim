@@ -55,9 +55,11 @@ return {
       },
     },
     config = function(_, opts)
+      require 'catppuccin'
       local hooks = require 'ibl.hooks'
       hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
         for name, value in pairs(vim.g.rainbow_delimiters) do
+          print(name, value)
           vim.api.nvim_set_hl(0, name, { fg = value })
         end
       end)
@@ -73,7 +75,7 @@ return {
           'RainbowDelimiterCyan',
         },
       }
-      -- require('ibl').setup(opts)
+      require('ibl').setup(opts)
       hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
     end,
   },

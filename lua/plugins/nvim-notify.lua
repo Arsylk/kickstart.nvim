@@ -38,7 +38,7 @@ return {
       render = 'minimal',
       background_colour = 'NotifyBackground',
       level = 2,
-      fps = 30,
+      fps = 60,
       icons = {
         DEBUG = '',
         ERROR = '',

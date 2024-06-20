@@ -6,7 +6,10 @@ return {
     keys = {
       {
         '<A-f>',
-        function()
+        function(event)
+          local fmt = require('conform').list_formatters_for_buffer(event.buffer)[1]
+          local msg = ('Running LSP %s on %s'):format(fmt, vim.api.nvim_buf_get_name(event.buffer))
+          vim.notify(msg, 'info')
           require('conform').format { async = true, lsp_fallback = true }
         end,
         mode = '',
@@ -17,8 +20,8 @@ return {
       notify_on_error = true,
       formatters_by_ft = {
         lua = { 'stylua' },
-        javascript = { 'prettier' },
-        typescript = { 'prettier' },
+        javascript = { 'biome' },
+        typescript = { 'biome' },
       },
       format_on_save = function(bufnr)
         local disable_filetypes = {
