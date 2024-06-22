@@ -35,16 +35,12 @@ vim.g.loaded_ruby_provider = 0
 vim.g.have_nerd_font = true
 
 -- Tab size
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
+vim.opt.tabstop = 2
+vim.opt.softtabstop = 2
+vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
-vim.api.nvim_create_autocmd({ 'FileType' }, {
-  pattern = { 'lua' },
-  callback = function()
-    vim.opt_local.tabstop = 2
-    vim.opt_local.shiftwidth = 2
-  end,
-})
+vim.opt.smartindent = true
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
