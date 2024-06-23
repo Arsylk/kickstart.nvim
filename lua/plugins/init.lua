@@ -30,13 +30,13 @@ return {
       require('catppuccin').setup(opts)
       local theme = require 'catppuccin.palettes.mocha'
       local highlight = {
+        RainbowCyan = theme.teal,
         RainbowRed = theme.red,
         RainbowYellow = theme.yellow,
         RainbowBlue = theme.blue,
         RainbowOrange = theme.peach,
         RainbowGreen = theme.green,
         RainbowViolet = theme.maroon,
-        RainbowCyan = theme.teal,
       }
       vim.g.rainbow_delimiters = { highlight = highlight }
     end,
@@ -66,13 +66,13 @@ return {
 
       opts.scope = {
         highlight = {
+          'RainbowDelimiterCyan',
           'RainbowDelimiterRed',
           'RainbowDelimiterYellow',
           'RainbowDelimiterBlue',
           'RainbowDelimiterOrange',
           'RainbowDelimiterGreen',
           'RainbowDelimiterViolet',
-          'RainbowDelimiterCyan',
         },
       }
       require('ibl').setup(opts)

@@ -27,8 +27,8 @@ return {
       messages = {
         enabled = true,
         view = 'notify',
-        view_error = 'notify',
-        view_warn = 'notify',
+        view_error = 'mini',
+        view_warn = 'mini',
         view_history = 'messages',
         view_search = 'virtualtext',
         opts = {},
