@@ -6,11 +6,11 @@ return {
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
       'folke/lazydev.nvim',
+      'b0o/schemastore.nvim',
       { 'j-hui/fidget.nvim' },
     },
     config = function()
       require('lazydev').setup {}
-      require('neoconf').setup {}
       vim.diagnostic.config {
         update_in_insert = true,
         float = {
@@ -48,35 +48,110 @@ return {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
       capabilities.textDocument.completion.completionItem.snippetSupport = true
+      capabilities.textDocument.callHierarchy.dynamicRegistration = true
 
-      local lazyPlugins = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
       local servers = {
         biome = {},
         tsserver = {},
         lua_ls = {
           settings = {
             Lua = {
-              runtime = {
-                version = 'LuaJIT',
-              },
-              workspace = {
-                checkthirdparty = { lazyPlugins },
-                library = vim.tbl_extend('force', vim.api.nvim_get_runtime_file('', true), { vim.env.VIMRUNTIME }),
-              },
               completion = {
                 callSnippet = 'Replace',
               },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
               diagnostics = {
                 disable = { 'missing-fields' },
                 globals = { 'vim' },
               },
+              runtime = {
+                path = { '?.lua', '?/init.lua' },
+                pathStrict = true,
+                version = 'LuaJIT',
+              },
+              workspace = {
+                checkThirdParty = false,
+                checkthirdparty = { '/home/arsylk/.local/share/nvim/lazy/lazy.nvim' },
+                ignoreDir = { '/lua' },
+                library = {
+                  '/usr/share/nvim/runtime',
+                  '/home/arsylk/.local/share/nvim/lazy/lazy.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/cmp-nvim-lsp',
+                  '/home/arsylk/.local/share/nvim/lazy/fidget.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/schemastore.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/lazydev.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/mason-tool-installer.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/mason-lspconfig.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/mason.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/nvim-lspconfig',
+                  '/home/arsylk/.local/share/nvim/lazy/nvim-treesitter',
+                  '/home/arsylk/.local/share/nvim/lazy/rainbow-delimiters.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/undotree',
+                  '/home/arsylk/.local/share/nvim/lazy/gitsigns.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/lualine-lsp-progress',
+                  '/home/arsylk/.local/share/nvim/lazy/lualine.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/tabline.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/yanky.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/nvim-notify',
+                  '/home/arsylk/.local/share/nvim/lazy/nui.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/noice.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/nvim-web-devicons',
+                  '/home/arsylk/.local/share/nvim/lazy/telescope-undo.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/telescope-ui-select.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/telescope-fzf-native.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/telescope.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/diffview.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/plenary.nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/neogit',
+                  '/home/arsylk/.local/share/nvim/lazy/nvim-lint',
+                  '/home/arsylk/.local/share/nvim/lazy/catppuccin',
+                  '/usr/share/nvim/runtime',
+                  '/usr/lib/nvim',
+                  '/home/arsylk/.local/share/nvim/lazy/cmp-nvim-lsp/after',
+                  '/home/arsylk/.local/share/nvim/lazy/catppuccin/after',
+                  '/home/arsylk/.config/nvim/after',
+                  '/home/arsylk/.local/state/nvim/lazy/readme',
+                  '/usr/share/nvim/runtime/lua',
+                  '/home/arsylk.local/share/nvim/lazy/luvit-meta/library',
+                  '/home/arsylk/.config/nvim/lua',
+                  '/home/arsylk/.local/share/nvim/lazy/noice.nvim/lua',
+                },
+              },
             },
           },
         },
-        jsonls = {},
-        yamlls = {},
+        jsonls = {
+          settings = {
+            json = {
+              schemas = require('schemastore').json.schemas(),
+              validate = {
+                enable = true,
+              },
+            },
+          },
+        },
+        yamlls = {
+          settings = {
+            yaml = {
+              schemas = require('schemastore').yaml.schemas(),
+            },
+            schemaStore = {
+              enable = true,
+            },
+          },
+        },
         eslint_d = {},
+        pylsp = {
+          settings = {
+            pylsp = {
+              plugins = {
+                pycodestyle = {
+                  ignore = { 'W391' },
+                  maxLineLength = 120,
+                },
+              },
+            },
+          },
+        },
       }
 
       --  You can press `g?` for help in this menu.
