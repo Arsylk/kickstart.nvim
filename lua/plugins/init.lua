@@ -14,6 +14,14 @@ return {
         gitsigns = true,
         treesitter = true,
         notify = true,
+        noice = true,
+        neogit = true,
+        lsp_saga = true,
+        native_lsp = {
+          enabled = true,
+          hints = { 'italic' },
+        },
+        rainbow_delimiters = true,
         mini = {
           enabled = true,
         },
@@ -56,6 +64,8 @@ return {
     },
     config = function(_, opts)
       require 'catppuccin'
+      require('ibl').setup(opts)
+
       local hooks = require 'ibl.hooks'
       hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
         for name, value in pairs(vim.g.rainbow_delimiters) do
@@ -64,18 +74,6 @@ return {
         end
       end)
 
-      opts.scope = {
-        highlight = {
-          'RainbowDelimiterCyan',
-          'RainbowDelimiterRed',
-          'RainbowDelimiterYellow',
-          'RainbowDelimiterBlue',
-          'RainbowDelimiterOrange',
-          'RainbowDelimiterGreen',
-          'RainbowDelimiterViolet',
-        },
-      }
-      require('ibl').setup(opts)
       hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
     end,
   },

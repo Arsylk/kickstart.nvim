@@ -19,6 +19,7 @@ return {
         signs = true,
         underline = true,
         virtual_text = false,
+        severity_sort = true,
       }
 
       --    function will be executed to configure the current buffer
@@ -51,7 +52,13 @@ return {
       capabilities.textDocument.callHierarchy.dynamicRegistration = true
 
       local servers = {
-        biome = {},
+        biome = {
+          settings = {
+            biome = {
+              single_file_support = true,
+            },
+          },
+        },
         tsserver = {},
         lua_ls = {
           settings = {
