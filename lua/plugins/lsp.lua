@@ -146,7 +146,6 @@ return {
             },
           },
         },
-        eslint_d = {},
         pylsp = {
           settings = {
             pylsp = {
@@ -157,6 +156,11 @@ return {
                 },
               },
             },
+          },
+        },
+        hyprls = {
+          settings = {
+            hyprls = {},
           },
         },
       }

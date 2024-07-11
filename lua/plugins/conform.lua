@@ -28,11 +28,7 @@ return {
           --[[  c = true, cpp = true  ]]
         }
         return {
-<<<<<<< HEAD
-          timeout_ms = 1500,
-=======
-          timeout_ms = 3000,
->>>>>>> 3071cb2f540f5be4e88cb86c4148e21a210bd62e
+          timeout_ms = 2000,
           lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
         }
       end,

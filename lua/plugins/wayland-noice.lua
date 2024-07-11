@@ -109,15 +109,6 @@ return {
       notify = {
         enabled = true,
         view = 'mini',
-<<<<<<< HEAD
-      },
-      commands = {
-        search = {
-          view = 'popup',
-          filter = { kind = 'search' },
-        },
-=======
->>>>>>> 114a1d8d134319567eed1ba649f27e24f83e377b
       },
     },
   },
