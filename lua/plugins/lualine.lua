@@ -16,7 +16,7 @@ local function get_oil_extension()
       color = function()
         local val = require('fancyutil').get_oil_nnn()
         if val then
-          return { fg = '#054fca', bg = '#ff98dd' }
+          return 'lualine_z_mode_visual'
         end
       end,
     },
@@ -78,7 +78,7 @@ return {
           lualine_x = {
             {
               'lsp_progress',
-              display_components = { 'lsp_client_name', 'spinner', { 'title', 'percentage', 'message' } },
+              display_components = { 'lsp_client_name', { 'title', 'percentage', 'message' } },
               colors = {
                 percentage = colors.gray,
                 title = colors.gray,

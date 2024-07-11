@@ -35,16 +35,12 @@ vim.g.loaded_ruby_provider = 0
 vim.g.have_nerd_font = true
 
 -- Tab size
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
+vim.opt.tabstop = 2
+vim.opt.softtabstop = 2
+vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
-vim.api.nvim_create_autocmd({ 'FileType' }, {
-  pattern = { 'lua' },
-  callback = function()
-    vim.opt_local.tabstop = 2
-    vim.opt_local.shiftwidth = 2
-  end,
-})
+vim.opt.smartindent = true
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
@@ -52,9 +48,7 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
 
 -- Make line numbers default
 vim.opt.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -90,14 +84,6 @@ vim.opt.timeoutlen = 300
 -- Configure how new splits should be opened
 vim.opt.splitright = true
 vim.opt.splitbelow = true
-
--- Setup folding
-vim.o.foldcolumn = '0'
-vim.o.foldlevel = 99
-vim.o.foldlevelstart = 99
-vim.o.foldenable = true
-vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
-vim.o.foldcolumn = '1'
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
@@ -174,7 +160,7 @@ vim.opt.rtp:prepend(lazypath)
 --
 --  To update plugins you can run
 --    :Lazy update
---
+--method
 -- NOTE: Here is where you install your plugins.
 local opts = {
   ui = {
@@ -202,6 +188,7 @@ local opts = {
 require 'commands'
 require 'fancyutil'
 require 'config.keybinds'
+require 'config.options'
 require('lazy').setup('plugins', opts)
 -- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+-- vim: ts=3 sts=2 sw=2 et

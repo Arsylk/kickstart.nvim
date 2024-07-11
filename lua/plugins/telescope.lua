@@ -1,5 +1,6 @@
 return {
   {
+    enabled = false,
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
     dependencies = {
@@ -14,6 +15,7 @@ return {
       { 'nvim-telescope/telescope-ui-select.nvim' },
       { 'debugloop/telescope-undo.nvim' },
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-telescope/telescope-symbols.nvim' },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that

@@ -18,11 +18,10 @@ return {
             relative = 'win',
             type = 'split',
             position = 'right',
-            size = 0.3,
+            size = 0.35,
           },
         },
       },
     },
-    cmd = 'Trouble',
   },
 }

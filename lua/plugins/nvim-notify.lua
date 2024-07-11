@@ -38,7 +38,7 @@ return {
       render = 'minimal',
       background_colour = 'NotifyBackground',
       level = 2,
-      fps = 30,
+      fps = 60,
       icons = {
         DEBUG = '',
         ERROR = '',
@@ -65,11 +65,5 @@ return {
       end,
       on_close = function(args) end,
     },
-    config = function(opts)
-      local notify = require 'notify'
-      notify.setup(opts)
-      -- vim.api.nvim_buf_get_extmarks(u, ns_id, start, end_, opts)
-      vim.notify = notify
-    end,
   },
 }

@@ -12,7 +12,20 @@ return {
   },
   opts = {
     default_file_explorer = true,
-    restore_window_options = true,
+    store_window_options = true,
+    edelete_to_trash = true,
+
+    git = {
+      add = function(path)
+        return true
+      end,
+      mv = function(path)
+        return true
+      end,
+      rm = function(path)
+        return true
+      end,
+    },
 
     keymaps = {
       ['gd'] = {
@@ -29,7 +42,7 @@ return {
     },
     win_options = {
       wrap = true,
-      -- signcolumn = '',
+      signcolumn = 'yes',
       cursorcolumn = false,
       foldcolumn = '0',
       spell = false,
