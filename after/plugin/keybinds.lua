@@ -32,10 +32,10 @@ map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 -- })
 
 -- Keep cursor centered when PgUp & PgDown
-map('n', '<PgDown>', '<C-d><C-d>', { desc = 'Page down' })
-map('n', '<PgUp>', '<C-u><C-u>', { desc = 'Page up' })
-map('n', '<C-d>', '<C-d>zz', { desc = 'Half page down' })
-map('n', '<C-u>', '<C-u>zz', { desc = 'Half page up' })
+map('n', '<PgDown>', '<C-d><C-d>zz', { desc = 'Page down' })
+map('n', '<PgUp>', '<C-u><C-u>zz', { desc = 'Page up' })
+map('n', '<C-d>', '<C-d>zz', { noremap = true, desc = 'Half page down' })
+map('n', '<C-u>', '<C-u>zz', { noremap = true, desc = 'Half page up' })
 map('n', 'n', 'nzzzv', { desc = 'so and so...' })
 map('n', 'N', 'Nzzzv', { desc = 'so and so...' })
 
@@ -71,7 +71,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
     local function map(mode, l, r, opts)
       opts = opts or {}
-      opts.buffer = bufnr
+      opts.buffer = event.bufnr
       vim.keymap.set(mode, l, r, opts)
     end
 

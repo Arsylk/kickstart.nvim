@@ -18,11 +18,9 @@ return {
               action = 'enew',
               key = 'n',
             },
-            ,
             {
-            },
-            {
-              = ' dotfiles',
+              icon = ' ',
+              desc = 'dotfiles',
               group = 'Number',
               action = 'Telescope dotfiles',
               key = 'd',
