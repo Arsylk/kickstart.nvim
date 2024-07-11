@@ -52,9 +52,7 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
 
 -- Make line numbers default
 vim.opt.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -174,7 +172,7 @@ vim.opt.rtp:prepend(lazypath)
 --
 --  To update plugins you can run
 --    :Lazy update
---
+--method
 -- NOTE: Here is where you install your plugins.
 local opts = {
   ui = {
@@ -204,4 +202,4 @@ require 'fancyutil'
 require 'config.keybinds'
 require('lazy').setup('plugins', opts)
 -- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+-- vim: ts=3 sts=2 sw=2 et
