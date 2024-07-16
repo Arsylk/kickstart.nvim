@@ -4,12 +4,12 @@ return {
     opts = {
       sign_priority = 1,
       signs = {
-        add = { text = '┃' },
-        change = { text = '┃' },
-        delete = { text = '_' },
+        add = { text = '+' },
+        change = { text = '~' },
+        delete = { text = '-' },
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
-        untracked = { text = '┆' },
+        untracked = { text = '?' },
       },
     },
   },

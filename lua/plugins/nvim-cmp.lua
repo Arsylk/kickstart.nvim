@@ -39,6 +39,14 @@ return {
           end,
         },
         completion = { completeopt = 'menu,menuone,noinsert' },
+        enabled = function()
+          -- disable completion if the cursor is `Comment` syntax group.
+          if not cmp.config.context then
+            return true
+          end
+          return not cmp.config.context.in_treesitter_capture 'Comment'
+          -- return true
+        end,
 
         -- For an understanding of why these mappings were
         -- chosen, you will need to reaźd `:help ins-completion`
@@ -72,18 +80,25 @@ return {
           --
           -- <c-l> will move you to the right of each of the expansion locations.
           -- <c-h> is similar, except moving you backwards.
-          ['<Tab>'] = cmp.mapping(function()
-            if luasnip.expand_or_locally_jumpable() then
-              luasnip.expand_or_jump()
-            end
-          end, { 'i', 's' }),
-          ['<S-Tab>'] = cmp.mapping(function()
-            if luasnip.locally_jumpable(-1) then
-              luasnip.jump(-1)
+          ['<Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif luasnip.locally_jumpable(1) then
+              luasnip.jump(1)
+            else
+              fallback()
             end
           end, { 'i', 's' }),
 
-          -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
+          ['<S-Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            elseif luasnip.locally_jumpable(-1) then
+              luasnip.jump(-1)
+            else
+              fallback()
+            end
+          end, { 'i', 's' }), -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
           --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
         },
         sources = cmp.config.sources({
