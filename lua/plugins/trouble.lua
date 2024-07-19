@@ -1,7 +1,9 @@
 return {
   {
     'folke/trouble.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
+      -- icons = true,
       use_diagnostic_signs = true,
       signs = {
         -- icons / text used for a diagnostic

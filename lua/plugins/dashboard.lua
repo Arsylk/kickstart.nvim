@@ -29,7 +29,7 @@ return {
               icon = ' ',
               desc = 'dotfiles',
               group = 'Number',
-              action = 'FzfLua files cwd=~/.config/nvim/',
+              action = 'FzfLua files cwd=~/.config/nvim',
               key = 'd',
             },
           },

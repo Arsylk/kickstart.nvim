@@ -187,6 +187,7 @@ local opts = {
 
 require 'commands'
 require 'fancyutil'
+require 'config.options'
 require 'config.keybinds'
 require 'config.options'
 require('lazy').setup('plugins', opts)
