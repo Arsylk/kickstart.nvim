@@ -2,8 +2,11 @@ local map = vim.keymap.set
 
 -- The good 'ol keybinds
 map('n', '<C-a>', 'ggVG', { noremap = true, silent = true })
+map('n', '<D-a>', 'ggVG', { noremap = true, silent = true })
 map('n', '<C-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
+map('n', '<D-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
 map('n', '<C-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
+map('n', '<D-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
 
 -- Activate Ctrl+V as paste
 map('c', '<C-v>', function()
@@ -53,14 +56,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
       vim.keymap.set('n', keys, fn, { buffer = event.buf, desc = 'LSP: ' .. desc })
     end
 
-    local builtin = require 'telescope.builtin'
-    map('gd', builtin.lsp_definitions, '[G]oto [D]efinition')
-    map('gr', builtin.lsp_references, '[G]oto [R]eferences')
-    map('gi', builtin.lsp_implementations, '[G]oto [I]mplementation')
-    map('gt', builtin.lsp_type_definitions, '[G]oto [T]ype Definition')
-    map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclarations')
-    map('gic', builtin.lsp_incoming_calls, '[G]oto [I]ncoming [C]alls')
-    map('goc', builtin.lsp_outgoing_calls, '[G]oto [O]utgoing [C]alls')
+    local fzf = require 'fzf-lua'
+    map('gr', fzf.lsp_references, '[G]oto [R]eferences')
+    map('gd', fzf.lsp_definitions, '[G]oto [D]efinition')
+    map('gi', fzf.lsp_implementations, '[G]oto [I]mplementation')
+    map('gt', fzf.lsp_typedefs, '[G]oto [T]ype Definition')
+    map('gD', fzf.lsp_declarations, '[G]oto [D]eclarations')
+    map('gic', fzf.lsp_incoming_calls, '[G]oto [I]ncoming [C]alls')
+    map('goc', fzf.lsp_outgoing_calls, '[G]oto [O]utgoing [C]alls')
+    map('<Leader>ca', fzf.lsp_code_actions, '[C]ode [A]ctions')
 
     vim.keymap.set({ 'n', 'i' }, '<A-k>', vim.lsp.buf.hover, { noremap = true })
   end,

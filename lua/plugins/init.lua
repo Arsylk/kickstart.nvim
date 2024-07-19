@@ -1,5 +1,5 @@
 local function get_highlight()
-  local theme = require 'catppuccin.palettes.mocha'
+  local theme = require 'catppuccin.groups.integrations.rainbow_delimiters'
   local highlight = {
     RainbowCyan = theme.teal,
     RainbowRed = theme.red,
@@ -48,10 +48,6 @@ return {
         which_key = true,
       },
     },
-    config = function(_, opts)
-      require('catppuccin').setup(opts)
-      vim.g.rainbow_delimiters = get_highlight()
-    end,
   },
   { 'tpope/vim-sleuth' },
   {
@@ -59,17 +55,21 @@ return {
     dependencies = { 'catppuccin/nvim' },
     main = 'ibl',
     config = function()
+      require 'catppuccin'
+      local highlight = get_highlight()
+      print('highlight:', highlight)
       local opts = {
-        indent = vim.g.rainbow_delimiters or get_highlight(),
+        indent = highlight,
         exclude = {
           filetypes = {
             'dashboard',
           },
         },
       }
+      require('ibl').setup(opts)
       local hooks = require 'ibl.hooks'
       hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-        for name, value in pairs(vim.g.rainbow_delimiters or get_highlight()) do
+        for name, value in pairs(highlight) do
           vim.api.nvim_set_hl(0, name, { fg = value })
         end
       end)

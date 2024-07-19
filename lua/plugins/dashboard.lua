@@ -22,7 +22,7 @@ return {
               icon = ' ',
               desc = 'dotfiles',
               group = 'Number',
-              action = 'Telescope dotfiles',
+              action = 'FzfLua files cwd=~/.config/nvim',
               key = 'd',
             },
           },
