@@ -3,8 +3,8 @@ return {
     'mfussenegger/nvim-lint',
     init = function()
       require('lint').linters_by_ft = {
-        javascript = { 'biome' },
-        typescript = { 'biome' },
+        javascript = { 'biomejs' },
+        typescript = { 'biomejs' },
         json = { 'jsonlint' },
         lua = { 'luacheck' },
         go = { 'revive' },

@@ -1,8 +1,8 @@
 local map = vim.keymap.set
 
 -- The good 'ol keybinds
-map('n', '<C-a>', 'ggVG', { noremap = true, silent = true })
-map('n', '<C-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
+map('n', '<C-a>', 'ggVG$', { noremap = true, silent = true })
+map({ 'i', 'n' }, '<C-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
 map('n', '<C-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
 
 -- Activate Ctrl+V as paste
@@ -14,8 +14,9 @@ map('c', '<C-v>', function()
   local clip = vim.fn.getreg '+'
   vim.fn.setcmdline(lt .. clip .. rt, pos + clip:len())
   vim.cmd [[echo '' | redraw]]
-end, { silent = true, noremap = true, desc = 'Command paste' })
-map({ 'i', 'n' }, '<C-v>', '"+p', { noremap = true, desc = 'Command paste' })
+end, { noremap = true, desc = 'Command paste' })
+map('n', '<C-v>', '"+p', { desc = 'Command paste' })
+map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste' })
 
 -- Move between windows with arrows
 map('n', '<C-Left>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
@@ -25,10 +26,17 @@ map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Double Q to close current window
 --map('n', 'qq', '<CMD>q<CR>', { silent = true, desc = 'CLose window' })
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'vim' },
+  callback = function(params)
+    vim.keymap.set('n', 'qq', '<C-c>', { noremap = true, buffer = params.buf })
+  end,
+})
+
 -- vim.api.nvim_create_autocmd('FileType', {
---  pattern = 'TelescopePrompt',
---  callback = function(params)
---    vim.keymap.set('', 'qq', '<Esc>', { noremap = true, buffer = params.buf })
+--   pattern = { 'TelescopePrompt' },
+--   callback = function(params)
+--     vim.keymap.set('n', 'qq', '<Esc>', { buffer = params.buf })
 --   end,
 -- })
 
@@ -53,14 +61,14 @@ vim.api.nvim_create_autocmd('LspAttach', {
       vim.keymap.set('n', keys, fn, { buffer = event.buf, desc = 'LSP: ' .. desc })
     end
 
-    local builtin = require 'telescope.builtin'
-    map('gd', builtin.lsp_definitions, '[G]oto [D]efinition')
-    map('gr', builtin.lsp_references, '[G]oto [R]eferences')
-    map('gi', builtin.lsp_implementations, '[G]oto [I]mplementation')
-    map('gt', builtin.lsp_type_definitions, '[G]oto [T]ype Definition')
+    local fzf = require 'fzf-lua'
+    map('gd', fzf.lsp_definitions, '[G]oto [D]efinition')
+    map('gr', fzf.lsp_references, '[G]oto [R]eferences')
+    map('gi', fzf.lsp_implementations, '[G]oto [I]mplementation')
+    map('gt', fzf.lsp_type_definitions, '[G]oto [T]ype Definition')
     map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclarations')
-    map('gic', builtin.lsp_incoming_calls, '[G]oto [I]ncoming [C]alls')
-    map('goc', builtin.lsp_outgoing_calls, '[G]oto [O]utgoing [C]alls')
+    map('gic', fzf.lsp_incoming_calls, '[G]oto [I]ncoming [C]alls')
+    map('goc', fzf.lsp_outgoing_calls, '[G]oto [O]utgoing [C]alls')
 
     vim.keymap.set({ 'n', 'i' }, '<A-k>', vim.lsp.buf.hover, { noremap = true })
   end,
@@ -72,7 +80,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
     local function map(mode, l, r, opts)
       opts = opts or {}
-      opts.buffer = bufnr
+      opts.buffer = event.bufnr
       vim.keymap.set(mode, l, r, opts)
     end
 

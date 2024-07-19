@@ -10,25 +10,33 @@ return {
           week_header = {
             enable = true,
           },
-<<<<<<< HEAD
-=======
           shortcut = {
             {
               icon = ' ',
-              desc = 'New',
+              desc = 'new',
               group = '@property',
               action = 'enew',
               key = 'n',
             },
             {
+              icon = ' ',
+              desc = 'jumps',
+              group = '@string',
+              action = 'FzfLua jumps',
+              key = 'j',
+            },
+            {
               icon = ' ',
               desc = 'dotfiles',
               group = 'Number',
-              action = 'Telescope dotfiles',
+              action = 'FzfLua files cwd=~/.config/nvim/',
               key = 'd',
             },
           },
->>>>>>> b36a320a240fbe0c351dea13f855ec46433f6012
+          project = {
+            enable = true,
+            action = 'FzfLua files cwd=',
+          },
         },
       }
     end,

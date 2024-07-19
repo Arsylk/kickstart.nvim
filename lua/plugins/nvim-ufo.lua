@@ -1,24 +1,6 @@
 return {
   {
     'kevinhwang91/nvim-ufo',
-<<<<<<< HEAD
-    dependencies = { 'kevinhwang91/promise-async' },
-    opts = {
-      open_fold_hl_timeout = 400,
-      close_fold_kinds_for_ft = { default = { 'imports', 'comment' } },
-      preview = {
-        win_config = {
-          border = { '', '─', '', '', '', '─', '', '' },
-          winhighlight = 'Normal:Folded',
-          winblend = 0,
-        },
-        mappings = {
-          scrollU = '<C-u>',
-          scrollD = '<C-d>',
-          jumpTop = '[',
-          jumpBot = ']',
-        },
-=======
     event = 'BufRead',
     dependencies = {
       'kevinhwang91/promise-async',
@@ -35,7 +17,6 @@ return {
             },
           }
         end,
->>>>>>> b36a320a240fbe0c351dea13f855ec46433f6012
       },
     },
     config = function()

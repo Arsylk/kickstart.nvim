@@ -30,6 +30,15 @@ return {
               return MiniHipatterns.compute_hex_color_group(correct, 'bg')
             end,
           },
+          hex_6_color = {
+            -- 43fcA0
+            pattern = '%x%x%x%x%x%x%f[%X]',
+            group = function(_, _, data)
+              local match = data.full_match
+              local correct = '#' .. match:sub(1, 2) .. match:sub(3, 4) .. match:sub(5, 6)
+              return MiniHipatterns.compute_hex_color_group(correct, 'bg')
+            end,
+          },
           rgb = {
             pattern = '()Rgb%(%s*%d+,%s*%d+,%s*%d+%s*%)()',
             group = function(_, _, data)

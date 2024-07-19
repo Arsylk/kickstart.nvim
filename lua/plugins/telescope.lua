@@ -1,5 +1,6 @@
 return {
   {
+    enabled = false,
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
     dependencies = {
