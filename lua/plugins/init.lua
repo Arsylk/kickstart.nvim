@@ -1,3 +1,17 @@
+local function get_highlight()
+  local theme = require 'catppuccin.groups.integrations.rainbow_delimiters'
+  local highlight = {
+    RainbowCyan = theme.teal,
+    RainbowRed = theme.red,
+    RainbowYellow = theme.yellow,
+    RainbowBlue = theme.blue,
+    RainbowOrange = theme.peach,
+    RainbowGreen = theme.green,
+    RainbowViolet = theme.maroon,
+  }
+  return { highlight = highlight }
+end
+
 return {
   {
     'catppuccin/nvim',
