@@ -28,6 +28,9 @@ return {
           enabled = true,
         },
         which_key = true,
+        dap = true,
+        lsp_trouble = true,
+        overseer = true,
       },
     },
     config = function(_, opts)
@@ -37,4 +40,5 @@ return {
     end,
   },
   { 'tpope/vim-sleuth' },
+  m,
 }

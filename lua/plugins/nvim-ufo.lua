@@ -1,5 +1,6 @@
 return {
   {
+    enabled = not vim.g.vscode,
     'kevinhwang91/nvim-ufo',
     event = 'BufRead',
     dependencies = {
