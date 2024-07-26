@@ -11,17 +11,6 @@ return {
     },
     config = function()
       require('lazydev').setup {}
-      vim.diagnostic.config {
-        update_in_insert = true,
-        float = {
-          focusable = false,
-        },
-        signs = true,
-        underline = true,
-        virtual_text = false,
-        severity_sort = true,
-      }
-
       --    function will be executed to configure the current buffer
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
@@ -77,7 +66,6 @@ return {
               },
               workspace = {
                 checkThirdParty = false,
-                checkthirdparty = { '/home/arsylk/.local/share/nvim/lazy/lazy.nvim' },
                 ignoreDir = { '/lua' },
                 library = {
                   '/usr/share/nvim/runtime',

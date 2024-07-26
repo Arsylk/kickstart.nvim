@@ -1,9 +1,12 @@
 local map = vim.keymap.set
 
 -- The good 'ol keybinds
-map('n', '<C-a>', 'ggVG$', { noremap = true, silent = true })
-map({ 'i', 'n' }, '<C-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
+map('n', '<C-a>', 'ggVG', { noremap = true, silent = true })
+map('n', '<D-a>', 'ggVG', { noremap = true, silent = true })
+map('n', '<C-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
+map('n', '<D-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
 map('n', '<C-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
+map('n', '<D-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
 
 -- Activate Ctrl+V as paste
 map('c', '<C-v>', function()
@@ -14,9 +17,8 @@ map('c', '<C-v>', function()
   local clip = vim.fn.getreg '+'
   vim.fn.setcmdline(lt .. clip .. rt, pos + clip:len())
   vim.cmd [[echo '' | redraw]]
-end, { noremap = true, desc = 'Command paste' })
-map('n', '<C-v>', '"+p', { desc = 'Command paste' })
-map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste' })
+end, { silent = true, noremap = true, desc = 'Command paste' })
+map({ 'i', 'n' }, '<C-v>', '"+p', { noremap = true, desc = 'Command paste' })
 
 -- Move between windows with arrows
 map('n', '<C-Left>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
@@ -26,33 +28,18 @@ map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Double Q to close current window
 --map('n', 'qq', '<CMD>q<CR>', { silent = true, desc = 'CLose window' })
-vim.api.nvim_create_autocmd('FileType', {
-<<<<<<< HEAD
-  pattern = { 'vim' },
-  callback = function(params)
-    vim.keymap.set('n', 'qq', '<C-c>', { noremap = true, buffer = params.buf })
-  end,
-})
-
 -- vim.api.nvim_create_autocmd('FileType', {
---   pattern = { 'TelescopePrompt' },
---   callback = function(params)
---     vim.keymap.set('n', 'qq', '<Esc>', { buffer = params.buf })
+--  pattern = 'TelescopePrompt',
+--  callback = function(params)
+--    vim.keymap.set('', 'qq', '<Esc>', { noremap = true, buffer = params.buf })
 --   end,
 -- })
-=======
-  pattern = 'TelescopePrompt',
-  callback = function(params)
-    vim.keymap.set('', 'qq', '<Esc>', { noremap = true, buffer = params.buf })
-  end,
-})
->>>>>>> 59001e7a4709e4f1ec8a3f53eaec2508008cc44d
 
 -- Keep cursor centered when PgUp & PgDown
-map('n', '<PgDown>', '<C-d><C-d>', { desc = 'Page down' })
-map('n', '<PgUp>', '<C-u><C-u>', { desc = 'Page up' })
-map('n', '<C-d>', '<C-d>zz', { desc = 'Half page down' })
-map('n', '<C-u>', '<C-u>zz', { desc = 'Half page up' })
+map('n', '<PgDown>', '<C-d><C-d>zz', { desc = 'Page down' })
+map('n', '<PgUp>', '<C-u><C-u>zz', { desc = 'Page up' })
+map('n', '<C-d>', '<C-d>zz', { noremap = true, desc = 'Half page down' })
+map('n', '<C-u>', '<C-u>zz', { noremap = true, desc = 'Half page up' })
 map('n', 'n', 'nzzzv', { desc = 'so and so...' })
 map('n', 'N', 'Nzzzv', { desc = 'so and so...' })
 
@@ -70,13 +57,14 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 
     local fzf = require 'fzf-lua'
-    map('gd', fzf.lsp_definitions, '[G]oto [D]efinition')
     map('gr', fzf.lsp_references, '[G]oto [R]eferences')
+    map('gd', fzf.lsp_definitions, '[G]oto [D]efinition')
     map('gi', fzf.lsp_implementations, '[G]oto [I]mplementation')
-    map('gt', fzf.lsp_type_definitions, '[G]oto [T]ype Definition')
-    map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclarations')
+    map('gt', fzf.lsp_typedefs, '[G]oto [T]ype Definition')
+    map('gD', fzf.lsp_declarations, '[G]oto [D]eclarations')
     map('gic', fzf.lsp_incoming_calls, '[G]oto [I]ncoming [C]alls')
     map('goc', fzf.lsp_outgoing_calls, '[G]oto [O]utgoing [C]alls')
+    map('<Leader>ca', fzf.lsp_code_actions, '[C]ode [A]ctions')
 
     vim.keymap.set({ 'n', 'i' }, '<A-k>', vim.lsp.buf.hover, { noremap = true })
   end,
