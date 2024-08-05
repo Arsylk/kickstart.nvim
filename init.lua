@@ -189,7 +189,6 @@ require 'commands'
 require 'fancyutil'
 require 'config.options'
 require 'config.keybinds'
-require 'config.options'
 require('lazy').setup('plugins', opts)
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=3 sts=2 sw=2 et
