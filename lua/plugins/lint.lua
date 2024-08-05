@@ -8,6 +8,7 @@ return {
         json = { 'jsonlint' },
         lua = { 'luacheck' },
         go = { 'revive' },
+        python = { 'ruff' },
       }
     end,
     config = function()

@@ -1,0 +1,21 @@
+return {
+  {
+    'nvimdev/lspsaga.nvim',
+    after = 'nvim-lspconfig',
+    opts = {
+      ui = {
+        devicon = true,
+        code_action = '',
+        symbol_in_winbar = {
+          enable = false,
+        },
+      },
+    },
+    config = function(_, opts)
+      local theme = { ui = { kind = require('catppuccin.groups.integrations.lsp_saga').custom_kind() } }
+      opts = vim.tbl_deep_extend('force', opts, theme)
+      print(vim.inspect(opts))
+      require('lspsaga').setup(opts)
+    end,
+  },
+}

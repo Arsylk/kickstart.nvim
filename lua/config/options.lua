@@ -8,8 +8,6 @@ vim.diagnostic.config {
   virtual_text = false,
   severity_sort = true,
 }
-<<<<<<< HEAD
-=======
 
 local signs = { Error = '󰅚', Warn = '󰀪', Hint = '󰌶', Info = '' }
 for type, icon in pairs(signs) do
@@ -18,4 +16,3 @@ for type, icon in pairs(signs) do
   hl = 'LspDiagnosticSign' .. type
   vim.cmd(('sign define %s text=%s texthl=%s numhl= '):format(hl, icon, hl))
 end
->>>>>>> 59001e7a4709e4f1ec8a3f53eaec2508008cc44d

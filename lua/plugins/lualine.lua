@@ -1,6 +1,13 @@
 local function get_oil_extension()
   local oil_ext = vim.deepcopy(require 'lualine.extensions.oil')
-  oil_ext.sections.lualine_b = { { 'pwd' } }
+  oil_ext.sections.lualine_a = {
+    {
+      function()
+        return vim.uv.cwd()
+      end,
+    },
+  }
+  -- oil_ext.sections.lualine_b = { { '<Cmd>vim.uv.cmd()<CR>' } }
   oil_ext.sections.lualine_z = {
     {
       'mode',

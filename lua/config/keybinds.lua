@@ -27,7 +27,6 @@ map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 -- Double Q to close current window
 --map('n', 'qq', '<CMD>q<CR>', { silent = true, desc = 'CLose window' })
 vim.api.nvim_create_autocmd('FileType', {
-<<<<<<< HEAD
   pattern = { 'vim' },
   callback = function(params)
     vim.keymap.set('n', 'qq', '<C-c>', { noremap = true, buffer = params.buf })
@@ -40,13 +39,11 @@ vim.api.nvim_create_autocmd('FileType', {
 --     vim.keymap.set('n', 'qq', '<Esc>', { buffer = params.buf })
 --   end,
 -- })
-=======
   pattern = 'TelescopePrompt',
   callback = function(params)
     vim.keymap.set('', 'qq', '<Esc>', { noremap = true, buffer = params.buf })
   end,
 })
->>>>>>> 59001e7a4709e4f1ec8a3f53eaec2508008cc44d
 
 -- Keep cursor centered when PgUp & PgDown
 map('n', '<PgDown>', '<C-d><C-d>', { desc = 'Page down' })
@@ -61,20 +58,58 @@ map('c', '<S-CR>', function()
   require('noice').redirect(vim.fn.getcmdline())
 end, { desc = 'Redirect Cmdline' })
 
--- LSP specific mappings
+-- LSP mappings
+-- local builtin = function() require('fzf-lua' end
+map('n', '<leader><leader>', function()
+  require('fzf-lua').buffers()
+end, { desc = '[ ] Find existing buffers' })
+map('n', '<leader>fh', function()
+  require('fzf-lua').help_tags()
+end, { desc = '[F]ind [H]elp' })
+map('n', '<leader>fk', function()
+  require('fzf-lua').keymaps()
+end, { desc = '[F]ind [K]eymaps' })
+map('n', '<leader>ff', function()
+  require('fzf-lua').find_files()
+end, { desc = '[F]ind [F]iles' })
+map('n', '<leader>fs', function()
+  require('fzf-lua').builtin()
+end, { desc = '[F]ind [S]elect Telescope' })
+map('n', '<leader>fw', function()
+  require('fzf-lua').grep_string()
+end, { desc = '[F]ind current [W]ord' })
+map('n', '<leader>fg', function()
+  require('fzf-lua').live_grep()
+end, { desc = '[F]ind by [G]rep' })
+map('n', '<leader>fd', '<Cmd>FzfLua diagnostics_document<CR>', { desc = '[F]ind [D]iagnostics' })
+map('n', '<leader>fr', function()
+  require('fzf-lua').resume()
+end, { desc = '[F]ind [R]esume' })
+map('n', '<leader>f.', function()
+  require('fzf-lua').oldfiles()
+end, { desc = '[F]ind Recent Files [.]' })
+vim.keymap.set('n', '<leader>fn', '<Cmd>FzfLua files cwd=$HOME/.config/nvim<CR>', { desc = '[F]ind [N]eovim files' })
+
+-- map('n', '<leader>fy', extensions.yank_history.yank_history, { desc = '[F]ind [Y]ank History' })
+
+-- LSP buffer specific mappings
 vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
+  group = vim.api.nvim_create_augroup('custom-lsp-attach', { clear = true }),
   callback = function(event)
     local map = function(keys, fn, desc)
       vim.keymap.set('n', keys, fn, { buffer = event.buf, desc = 'LSP: ' .. desc })
     end
 
     local fzf = require 'fzf-lua'
+    map('<leader>ca', fzf.lsp_code_actions, '[C]ode [A]ctions')
+    map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+
+    map('gf', fzf.lsp_definitions, '[G]oto Lsp [F]inder')
     map('gd', fzf.lsp_definitions, '[G]oto [D]efinition')
     map('gr', fzf.lsp_references, '[G]oto [R]eferences')
     map('gi', fzf.lsp_implementations, '[G]oto [I]mplementation')
-    map('gt', fzf.lsp_type_definitions, '[G]oto [T]ype Definition')
-    map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclarations')
+    map('gt', fzf.lsp_typedefs, '[G]oto [T]ype Definition')
+    map('gD', fzf.lsp_declarations, '[G]oto [D]eclarations')
     map('gic', fzf.lsp_incoming_calls, '[G]oto [I]ncoming [C]alls')
     map('goc', fzf.lsp_outgoing_calls, '[G]oto [O]utgoing [C]alls')
 
@@ -82,7 +117,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-vim.api.nvim_create_autocmd('LspAttach', {
+-- mappings for Gitsigns, a bit ghetto but zzz
+vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWritePost' }, {
   callback = function(event)
     local gitsigns = require 'gitsigns'
 
@@ -108,5 +144,21 @@ vim.api.nvim_create_autocmd('LspAttach', {
         gitsigns.nav_hunk 'prev'
       end
     end, { desc = 'Jump to previous git [C]hange' })
+
+    -- normal mode
+    map('n', '<leader>hs', gitsigns.stage_hunk, { desc = 'git [s]tage hunk' })
+    map('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'git [r]eset hunk' })
+    map('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'git [S]tage buffer' })
+    map('n', '<leader>hu', gitsigns.undo_stage_hunk, { desc = 'git [u]ndo stage hunk' })
+    map('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'git [R]eset buffer' })
+    map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'git [p]review hunk' })
+    map('n', '<leader>hb', gitsigns.blame_line, { desc = 'git [b]lame line' })
+    map('n', '<leader>hd', gitsigns.diffthis, { desc = 'git [d]iff against index' })
+    map('n', '<leader>hD', function()
+      gitsigns.diffthis '@'
+    end, { desc = 'git [D]iff against last commit' })
+    -- Toggles
+    map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = '[T]oggle git show [b]lame line' })
+    map('n', '<leader>tD', gitsigns.toggle_deleted, { desc = '[T]oggle git show [D]eleted' })
   end,
 })

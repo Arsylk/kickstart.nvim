@@ -12,11 +12,16 @@ end
 -- Redirect command output into new buffer
 vim.api.nvim_create_user_command('Redir', function(ctx)
 <<<<<<< HEAD
+<<<<<<< HEAD
   local exec = vim.api.nvim_exec2(ctx.args, { output = true })
   local lines = vim.split(exec.output, '\n', { plain = true })
 =======
   local lines = vim.split(vim.api.nvim_exec(ctx.nargs, true), '\n', { plain = true })
 >>>>>>> 59001e7a4709e4f1ec8a3f53eaec2508008cc44d
+=======
+  local exec = vim.api.nvim_exec2(ctx.args, { output = true })
+  local lines = vim.split(exec.output, '\n', { plain = true })
+>>>>>>> origin/macbook
   vim.cmd 'new'
   vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
   vim.opt_local.modified = false
