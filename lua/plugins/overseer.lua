@@ -1,6 +1,11 @@
 return {
   {
     'stevearc/overseer.nvim',
-    opts = {},
+    opts = {
+      strategy = {
+        'toggleterm',
+        close_on_exit = false,
+      },
+    },
   },
 }

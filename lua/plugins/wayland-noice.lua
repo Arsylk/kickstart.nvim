@@ -37,7 +37,7 @@ return {
         backend = 'nui',
       },
       redirect = {
-        view = 'popup',
+        view = 'split',
         filter = { event = 'msg_show' },
       },
       notify = {
@@ -94,36 +94,38 @@ return {
       },
       presets = {
         bottom_search = true,
-        command_palette = true,
+        command_palette = false,
         lsp_doc_border = true,
         long_message_to_split = true,
         inc_rename = true,
       },
       views = {
-        split = {
-          enter = true,
-        },
         cmdline_popup = {
-          border = {
-            style = 'none',
-            padding = { 2, 1 },
+          position = {
+            row = 5,
+            col = '50%',
           },
-          filter_options = {},
-          win_options = {
-            winhighlight = 'NormalFloat:NormalFloat,FloatBorder:FloatBorder',
+          size = {
+            width = 60,
+            height = 'auto',
           },
         },
         popupmenu = {
+          relative = 'editor',
+          position = {
+            row = 8,
+            col = '50%',
+          },
+          size = {
+            width = 60,
+            height = 10,
+          },
           border = {
-            style = 'none',
-            padding = { 1, 2 },
+            style = 'rounded',
+            padding = { 0, 1 },
           },
-          filter_options = {},
           win_options = {
-            winhighlight = 'NormalFloat:NormalFloat,FloatBorder:FloatBorder',
-          },
-          virtualtext = {
-            hl_group = 'Search',
+            winhighlight = { Normal = 'Normal', FloatBorder = 'DiagnosticInfo' },
           },
         },
       },

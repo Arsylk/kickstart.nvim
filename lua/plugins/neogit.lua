@@ -7,11 +7,5 @@ return {
       'nvim-telescope/telescope.nvim',
     },
     config = true,
-=======
-      'nvim-lua/plenary.nvim', -- required
-      'sindrets/diffview.nvim', -- optional - Diff integration
-      'nvim-telescope/telescope.nvim', -- optional
-    },
-    opts = {},
-  },
+ },
 }

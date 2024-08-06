@@ -8,7 +8,7 @@ return {
     },
     init = function()
       vim.api.nvim_create_autocmd('BufWinEnter', {
-        desc = 'Detect buffer and setup oil nnn flag',
+        desc = 'Detect terminal & disable line highlight',
         pattern = 'term://*',
         callback = function(params)
           local winnr = vim.fn.bufwinid(params.buf)

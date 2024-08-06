@@ -33,13 +33,8 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
--- vim.api.nvim_create_autocmd('FileType', {
---   pattern = { 'TelescopePrompt' },
---   callback = function(params)
---     vim.keymap.set('n', 'qq', '<Esc>', { buffer = params.buf })
---   end,
--- })
-  pattern = 'TelescopePrompt',
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'TelescopePrompt', 'fzf' },
   callback = function(params)
     vim.keymap.set('', 'qq', '<Esc>', { noremap = true, buffer = params.buf })
   end,
@@ -59,7 +54,6 @@ map('c', '<S-CR>', function()
 end, { desc = 'Redirect Cmdline' })
 
 -- LSP mappings
--- local builtin = function() require('fzf-lua' end
 map('n', '<leader><leader>', function()
   require('fzf-lua').buffers()
 end, { desc = '[ ] Find existing buffers' })
@@ -74,7 +68,7 @@ map('n', '<leader>ff', function()
 end, { desc = '[F]ind [F]iles' })
 map('n', '<leader>fs', function()
   require('fzf-lua').builtin()
-end, { desc = '[F]ind [S]elect Telescope' })
+end, { desc = '[F]ind [S]elect FzfLua' })
 map('n', '<leader>fw', function()
   require('fzf-lua').grep_string()
 end, { desc = '[F]ind current [W]ord' })
@@ -122,10 +116,8 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
   callback = function(event)
     local gitsigns = require 'gitsigns'
 
-    local function map(mode, l, r, opts)
-      opts = opts or {}
-      opts.buffer = event.bufnr
-      vim.keymap.set(mode, l, r, opts)
+    local function map(mode, l, r, desc)
+      vim.keymap.set(mode, l, r, { buffer = event.bufnr, desc = 'git: ' .. desc })
     end
 
     -- Navigation
@@ -135,7 +127,7 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
       else
         gitsigns.nav_hunk 'next'
       end
-    end, { desc = 'Jump to next git [C]hange' })
+    end, 'Jump to next [C]hange')
 
     map('n', '[c', function()
       if vim.wo.diff then
@@ -143,22 +135,22 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
       else
         gitsigns.nav_hunk 'prev'
       end
-    end, { desc = 'Jump to previous git [C]hange' })
+    end, 'Jump to previous [C]hange')
 
     -- normal mode
-    map('n', '<leader>hs', gitsigns.stage_hunk, { desc = 'git [s]tage hunk' })
-    map('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'git [r]eset hunk' })
-    map('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'git [S]tage buffer' })
-    map('n', '<leader>hu', gitsigns.undo_stage_hunk, { desc = 'git [u]ndo stage hunk' })
-    map('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'git [R]eset buffer' })
-    map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'git [p]review hunk' })
-    map('n', '<leader>hb', gitsigns.blame_line, { desc = 'git [b]lame line' })
-    map('n', '<leader>hd', gitsigns.diffthis, { desc = 'git [d]iff against index' })
+    map('n', '<leader>hs', gitsigns.stage_hunk, '[s]tage hunk')
+    map('n', '<leader>hr', gitsigns.reset_hunk, '[r]eset hunk')
+    map('n', '<leader>hS', gitsigns.stage_buffer, '[S]tage buffer')
+    map('n', '<leader>hu', gitsigns.undo_stage_hunk, '[u]ndo stage hunk')
+    map('n', '<leader>hR', gitsigns.reset_buffer, '[R]eset buffer')
+    map('n', '<leader>hp', gitsigns.preview_hunk, '[p]review hunk')
+    map('n', '<leader>hb', gitsigns.blame_line, '[b]lame line')
+    map('n', '<leader>hd', gitsigns.diffthis, '[d]iff against index')
     map('n', '<leader>hD', function()
       gitsigns.diffthis '@'
-    end, { desc = 'git [D]iff against last commit' })
+    end, '[D]iff against last commit')
     -- Toggles
-    map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = '[T]oggle git show [b]lame line' })
-    map('n', '<leader>tD', gitsigns.toggle_deleted, { desc = '[T]oggle git show [D]eleted' })
+    map('n', '<leader>tb', gitsigns.toggle_current_line_blame, '[T]oggle show [b]lame line')
+    map('n', '<leader>tD', gitsigns.toggle_deleted, '[T]oggle show [D]eleted')
   end,
 })

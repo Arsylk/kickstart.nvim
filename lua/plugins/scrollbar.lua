@@ -10,6 +10,8 @@ return {
         },
       },
       handlers = {
+        cursor = false,
+        search = true,
         gitsigns = true,
       },
     },

@@ -31,6 +31,17 @@ local function get_oil_extension()
   return oil_ext
 end
 
+--- @return vim.Diagnostic | nil
+local function get_line_diagnostic()
+  local diags = vim.diagnostic.get(0, { lnum = vim.fn.line '.' - 1 })
+  local filtered = vim.tbl_filter(function(value)
+    return vim.tbl_get(value, '_tags', 'unnecessary') ~= true
+  end, diags)
+  if #filtered > 0 then
+    return filtered[1]
+  end
+end
+
 return {
   {
     'nvim-lualine/lualine.nvim',
@@ -40,11 +51,6 @@ return {
       { 'arkav/lualine-lsp-progress' },
     },
     config = function()
-      local colors = {
-        gray = '#6c7086',
-        purple = '#cba6f7',
-      }
-
       require('lualine').setup {
         options = {
           theme = 'catppuccin',
@@ -66,11 +72,15 @@ return {
                 unnamed = '[No Name]', -- Text to show for unnamed buffers.
                 newfile = '[New]', -- Text to show for newly created file before first write
               },
+              separator = { left = '' },
             },
           },
           lualine_x = {
             { 'filetype' },
-            { 'fileformat' },
+            {
+              'fileformat',
+              separator = { right = '' },
+            },
           },
           lualine_y = {},
           lualine_z = {},
@@ -82,25 +92,57 @@ return {
               separator = { left = '', right = '' },
             },
           },
-          lualine_x = {
+          lualine_c = {
             {
-              'lsp_progress',
-              display_components = { 'lsp_client_name', { 'title', 'percentage', 'message' } },
-              colors = {
-                percentage = colors.gray,
-                title = colors.gray,
-                message = colors.gray,
-                spinner = colors.gray,
-                lsp_client_name = colors.purple,
-                use = true,
-              },
-              spinner = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' },
-              timer = {
-                progress_enddelay = 1500,
-                spinner = 1500,
-                lsp_client_enddelay = 2500,
+              'filename',
+              symbols = {
+                modified = '', -- Text to show when the file is modified.
+                readonly = '󰌾', -- Text to show when the file is non-modifiable or readonly.
+                unnamed = '[No Name]', -- Text to show for unnamed buffers.
+                newfile = '[New]', -- Text to show for newly created file before first write
               },
             },
+          },
+          lualine_x = {
+            {
+              function()
+                local line = get_line_diagnostic()
+                return line and ('%s: %s'):format(line.source, line.message) or ''
+              end,
+              color = function()
+                local line = get_line_diagnostic()
+                if line then
+                  local severity = line.severity
+                  local hl = 'lualine_b_diagnostics_info_inactive'
+                  if severity == vim.log.levels.DEBUG then
+                    hl = 'lualine_b_diagnostics_hint_inactive'
+                  elseif severity == vim.log.levels.WARN then
+                    hl = 'lualine_b_diagnostics_warn_inactive'
+                  elseif severity == vim.log.levels.ERROR then
+                    hl = 'lualine_b_diagnostics_error_inactive'
+                  end
+                  return hl
+                end
+              end,
+            },
+            -- {
+            --   'lsp_progress',
+            --   display_components = { 'lsp_client_name', { 'title', 'percentage', 'message' } },
+            --   colors = {
+            --     percentage = colors.gray,
+            --     title = colors.gray,
+            --     message = colors.gray,
+            --     spinner = colors.gray,
+            --     lsp_client_name = colors.purple,
+            --     use = true,
+            --   },
+            --   spinner = { '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' },
+            --   timer = {
+            --     progress_enddelay = 1500,
+            --     spinner = 1500,
+            --     lsp_client_enddelay = 2500,
+            --   },
+            -- },
           },
           lualine_z = {
             {
