@@ -29,16 +29,23 @@ map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'vim' },
   callback = function(params)
-    vim.keymap.set('n', 'qq', '<C-c>', { noremap = true, buffer = params.buf })
+    vim.keymap.set('n', 'qq', '<C-c>', { noremap = true, buffer = params.buf, desc = 'Close window' })
   end,
 })
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'TelescopePrompt', 'fzf' },
   callback = function(params)
-    vim.keymap.set('', 'qq', '<Esc>', { noremap = true, buffer = params.buf })
+    vim.keymap.set('', 'qq', '<Esc>', { noremap = true, buffer = params.buf, desc = 'Close window' })
   end,
 })
+
+-- Open autocomplete from normal mode
+map('n', '<C-Space>', function()
+  local cmp = require 'cmp'
+  vim.cmd [[startinsert]]
+  vim.schedule(cmp.complete)
+end, { silent = true, desc = 'Open autocomplete' })
 
 -- Keep cursor centered when PgUp & PgDown
 map('n', '<PgDown>', '<C-d><C-d>', { desc = 'Page down' })

@@ -13,7 +13,7 @@ return {
   opts = {
     default_file_explorer = true,
     store_window_options = true,
-    edelete_to_trash = true,
+    delete_to_trash = true,
 
     git = {
       add = function(path)

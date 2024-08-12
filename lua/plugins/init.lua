@@ -5,6 +5,7 @@ return {
     name = 'catppuccin',
     priority = 1000,
     opts = {
+      flavour = 'mocha',
       integrations = {
         cmp = true,
         gitsigns = true,
@@ -32,6 +33,7 @@ return {
         lsp_trouble = true,
         overseer = true,
       },
+      term_colors = true,
     },
     config = function(_, opts)
       require('catppuccin').setup(opts)

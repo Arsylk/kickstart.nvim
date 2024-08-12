@@ -2,10 +2,6 @@ return {
   {
     'akinsho/toggleterm.nvim',
     version = '*',
-    opts = {
-      size = 24,
-      open_mapping = [[<c-t>]],
-    },
     init = function()
       vim.api.nvim_create_autocmd('BufWinEnter', {
         desc = 'Detect terminal & disable line highlight',
@@ -16,5 +12,9 @@ return {
         end,
       })
     end,
+    opts = {
+      size = 24,
+      open_mapping = [[<c-t>]],
+    },
   },
 }

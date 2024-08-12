@@ -2,6 +2,8 @@ return {
   {
     'echasnovski/mini.nvim',
     config = function()
+      -- Setup terminal colors
+      require('mini.colors').setup()
       -- Better Around/Inside textobjects
       --
       -- Examples:
@@ -32,7 +34,7 @@ return {
           },
           hex_6_color = {
             -- 43fcA0
-            pattern = '%x%x%x%x%x%x%f[%X]',
+            pattern = '%f[%w]%x%x%x%x%x%x%f[%X]',
             group = function(_, _, data)
               local match = data.full_match
               local correct = '#' .. match:sub(1, 2) .. match:sub(3, 4) .. match:sub(5, 6)

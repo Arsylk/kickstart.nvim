@@ -7,7 +7,7 @@ return {
         typescript = { 'biomejs' },
         json = { 'jsonlint' },
         lua = { 'luacheck' },
-        go = { 'revive' },
+        -- go = { 'revive' },
         python = { 'ruff' },
       }
     end,
