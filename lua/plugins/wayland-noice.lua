@@ -16,17 +16,17 @@ return {
             pattern = {
               '^:%s*lua%s+',
               '^:%s*lua%s*=%s*',
-              '^:%s*=%s*',
               '^:%s*I%s+',
             },
             icon = '',
             lang = 'lua',
           },
+          calculator = { pattern = '^:=', icon = '', lang = 'vimnormal' },
         },
       },
       messages = {
         enabled = true,
-        view = 'notify',
+        view = 'mini',
         view_warn = 'mini',
         view_error = 'mini',
         view_history = 'messages',
@@ -42,7 +42,7 @@ return {
       },
       notify = {
         enabled = true,
-        view = 'notify',
+        view = 'mini',
       },
       lsp = {
         progress = {
@@ -69,6 +69,7 @@ return {
             enabled = true,
             trigger = true,
             luasnip = true,
+            throttle = 100,
           },
           view = nil,
           opts = {},
@@ -94,7 +95,7 @@ return {
       },
       presets = {
         bottom_search = true,
-        command_palette = false,
+        -- command_palette = true,
         lsp_doc_border = true,
         long_message_to_split = true,
         inc_rename = true,
@@ -129,22 +130,75 @@ return {
           },
         },
       },
+      format = {
+        details = {
+          '{date} ',
+          '{level} ',
+          '{event}',
+          { '{kind}', before = { '.', hl_group = 'NoiceFormatKind' } },
+          ' ',
+          '{title} ',
+          '{cmdline} ',
+          '{message}',
+        },
+        fzf = {
+          '{date} ',
+          '{event} ',
+          '{title} ',
+          '{message}',
+        },
+        fzf_preview = {
+          '{date} ',
+          '{level} ',
+          '{event}',
+          { '{kind}', before = { '.', hl_group = 'NoiceFormatKind' } },
+          '\n',
+          '{title}\n',
+          '\n',
+          '{data}',
+        },
+      },
       routes = {
-        --        {
-        --          filter = {
-        --            event = 'msg_show',
-        --            kind = 'search_count',
-        --          },
-        --          opts = {
-        --            skip = true,
-        --          },
-        --        },
         {
-          view = 'split',
           filter = {
-            event = { 'msg_show' },
-            min_height = 20,
+            event = 'msg_show',
+            any = {
+              { find = '%d+L, %d+B' },
+              { find = '^%d+ changes?; after #%d+' },
+              { find = '^%d+ changes?; before #%d+' },
+              { find = '^Hunk %d+ of %d+$' },
+              { find = '^%d+ fewer lines;?' },
+              { find = '^%d+ more lines?;?' },
+              { find = '^%d+ line less;?' },
+              { find = '^Already at newest change' },
+              { kind = 'wmsg' },
+              { kind = 'emsg', find = 'E486' },
+              { kind = 'quickfix' },
+            },
           },
+          view = 'mini',
+        },
+        {
+          filter = {
+            event = 'msg_show',
+            any = {
+              { find = '^%d+ lines .ed %d+ times?$' },
+              { find = '^%d+ lines yanked$' },
+              { kind = 'emsg', find = 'E490' },
+              -- { kind = 'search_count' },
+            },
+          },
+          opts = { skip = true },
+        },
+        {
+          filter = {
+            event = 'notify',
+            any = {
+              { find = '^No code actions available$' },
+              { find = '^No information available$' },
+            },
+          },
+          view = 'mini',
         },
       },
     },

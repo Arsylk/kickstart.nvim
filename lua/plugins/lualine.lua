@@ -5,6 +5,7 @@ local function get_oil_extension()
       function()
         return vim.uv.cwd()
       end,
+      separator = { left = '', right = '' },
     },
   }
   -- oil_ext.sections.lualine_b = { { '<Cmd>vim.uv.cmd()<CR>' } }
@@ -67,7 +68,7 @@ return {
               file_status = true,
               path = 3,
               symbols = {
-                modified = '', -- Text to show when the file is modified.
+                modified = '󰷫', -- Text to show when the file is modified.
                 readonly = '󰌾', -- Text to show when the file is non-modifiable or readonly.
                 unnamed = '[No Name]', -- Text to show for unnamed buffers.
                 newfile = '[New]', -- Text to show for newly created file before first write
@@ -75,15 +76,23 @@ return {
               separator = { left = '' },
             },
           },
-          lualine_x = {
-            { 'filetype' },
+          lualine_x = {},
+          lualine_y = {},
+          lualine_z = {
+            {
+              'filetype',
+              color = function()
+                return 'lualine_c_normal'
+              end,
+            },
             {
               'fileformat',
               separator = { right = '' },
+              color = function()
+                return 'lualine_c_normal'
+              end,
             },
           },
-          lualine_y = {},
-          lualine_z = {},
         },
         sections = {
           lualine_a = {
@@ -96,9 +105,9 @@ return {
             {
               'filename',
               symbols = {
-                modified = '', -- Text to show when the file is modified.
+                modified = '󰷫', -- Text to show when the file is modified.
                 readonly = '󰌾', -- Text to show when the file is non-modifiable or readonly.
-                unnamed = '[No Name]', -- Text to show for unnamed buffers.
+                unnamed = '[no name]', -- Text to show for unnamed buffers.
                 newfile = '[New]', -- Text to show for newly created file before first write
               },
             },

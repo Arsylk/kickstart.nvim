@@ -10,7 +10,7 @@ vim.api.nvim_create_autocmd('BufWinEnter', {
 
 -- Auto create directories before file save
 vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
-  pattern = '*',
+  pattern = { '/*', 'file://*' },
   group = vim.api.nvim_create_augroup('auto_create_dir', { clear = true }),
   callback = function(ctx)
     local dir = vim.fn.fnamemodify(ctx.file, ':p:h')

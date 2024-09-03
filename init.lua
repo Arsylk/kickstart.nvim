@@ -22,9 +22,6 @@
 
 -- ]]
 
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
-
 -- Set to disable providers from loading
 vim.g.loaded_node_provider = 1
 vim.g.loaded_perl_provider = 0
@@ -33,13 +30,6 @@ vim.g.loaded_ruby_provider = 0
 
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = true
-
--- Tab size
-vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
-vim.opt.smartindent = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`

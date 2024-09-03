@@ -31,3 +31,103 @@ vim.api.nvim_create_user_command('Playdict', function(ctx)
     end
   end
 end, { bang = true, nargs = '+', complete = 'command' })
+
+-- Gpg easy decrypt message
+vim.api.nvim_create_user_command('GpgDecrypt', function()
+  local logfile = '/tmp/nvim-gpg.log'
+  local output = vim.fn.system('gpg -o- -d ' .. vim.fn.expand '%:p:S' .. ' 2>' .. logfile)
+  local loglines = vim.fn.readfile(logfile)
+  local log = vim.fn.join(loglines, '\n')
+  if vim.v.shell_error == 0 then
+    local lines = vim.split(output, '\n', { plain = true })
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+    vim.notify(log, vim.log.levels.INFO)
+  else
+    vim.notify(log, vim.log.levels.ERROR)
+  end
+end, { nargs = 0 })
+
+vim.api.nvim_create_user_command('GpgEncrypt', function()
+  require('fzf-lua').fzf_exec(function(fzf_cb)
+    coroutine.wrap(function()
+      local co = coroutine.running()
+      local output = vim.fn.system 'gpg --list-public-keys --list-only --keyid-format long'
+      local lines = vim.split(output, '\n', { plain = true })
+
+      local type, id
+      local isOpen = false
+      for _, line in ipairs(lines) do
+        if line:match '^pub' and not isOpen then
+          -- Extract the type and hash
+          type = line:match '^pub%s+(%w+)'
+          isOpen = true
+        elseif line:match '^%s+' then
+          -- Format the ID with spaces every 4 characters
+          id = line:gsub('%S+', function(s)
+            return s:gsub('(%x%x%x%x)', '%1 '):sub(1, -2)
+          end)
+          id = id:gsub('^%s*(.-)%s*$', '%1')
+        elseif line:match '^uid' and isOpen then
+          -- Match the uid line to extract name and email
+          local name, email = line:match '^uid%s+%[.-%]%s+(.-)%s+<(.+)>$'
+          if name and email then
+            local msg = string.format('%s:', email)
+            msg = msg .. string.format('[\27[34m%s\27[0m] ', type)
+            msg = msg .. string.format('\27[32m%s\27[0m - %s ', email, name)
+            -- msg = msg .. string.format("\27[31m%s\27[0m", id)
+
+            fzf_cb(msg, function()
+              coroutine.resume(co)
+            end)
+            isOpen = false
+          end
+        end
+      end
+      fzf_cb()
+    end)()
+  end, {
+    fzf_opts = {
+      ['--exact'] = '',
+      ['--multi'] = '',
+      ['--with-nth'] = '2..',
+      ['--delimiter'] = ':',
+    },
+    preview = 'gpg --list-keys {1} && gpg --export --armor {1}',
+    actions = {
+      ['default'] = function(selected)
+        local target = vim.fn.join(vim.tbl_map(function(item)
+          return '-r ' .. item:match '^(.-):'
+        end, selected))
+        local cmd = string.format('gpg %s --armor -o- --encrypt', target)
+
+        local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+        local buffer = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_set_option_value('filetype', 'gpgcrypt', { buf = buffer })
+        vim.api.nvim_buf_set_lines(buffer, 0, -1, false, lines)
+
+        vim.cmd [[65vsplit]]
+        vim.api.nvim_set_current_buf(buffer)
+        vim.cmd('%!' .. cmd)
+
+        local win = vim.api.nvim_get_current_win()
+        vim.api.nvim_set_option_value('number', false, { win = win })
+        vim.api.nvim_set_option_value('relativenumber', false, { win = win })
+        vim.api.nvim_set_option_value('signcolumn', 'no', { win = win })
+        vim.api.nvim_set_option_value('cursorline', false, { win = win })
+        vim.api.nvim_set_option_value('foldcolumn', '0', { win = win })
+      end,
+    },
+  })
+end, { nargs = 0 })
+
+-- Overseer restart last task
+vim.api.nvim_create_user_command('OverseerRestartLast', function()
+  local overseer = require 'overseer'
+  local tasks = overseer.list_tasks { recent_first = true }
+  if vim.tbl_isempty(tasks) then
+    vim.notify('No tasks found', vim.log.levels.WARN)
+  else
+    overseer.run_action(tasks[1], 'restart')
+  end
+end, {})

@@ -41,5 +41,9 @@ return {
       vim.cmd.hi 'Comment gui=none'
     end,
   },
+  {
+    'nvim-tree/nvim-web-devicons',
+    opts = {},
+  },
   { 'tpope/vim-sleuth' },
 }

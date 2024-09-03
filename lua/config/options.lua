@@ -1,4 +1,9 @@
+vim.g.mapleader = ' '
+vim.g.maplocalleader = ' '
+
 vim.opt.termguicolors = true
+
+vim.opt.backspace = 'indent,eol,start'
 
 vim.diagnostic.config {
   update_in_insert = true,
@@ -11,6 +16,12 @@ vim.diagnostic.config {
   severity_sort = true,
 }
 
+vim.o.foldcolumn = '1'
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.foldenable = true
+vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+
 local signs = { Error = '󰅚', Warn = '󰀪', Hint = '󰌶', Info = '' }
 for type, icon in pairs(signs) do
   local hl = 'DiagnosticSign' .. type
@@ -19,11 +30,10 @@ for type, icon in pairs(signs) do
   vim.cmd(('sign define %s text=%s texthl=%s numhl= '):format(hl, icon, hl))
 end
 
-vim.api.nvim_create_autocmd('BufWinEnter', {
-  desc = 'Detect terminal & disable line highlight',
-  pattern = 'term://*',
-  callback = function(params)
-    local winnr = vim.fn.bufwinid(params.buf)
-    vim.api.nvim_set_option_value('cursorline', false, { win = winnr })
-  end,
-})
+-- maybe separate file ?
+vim.filetype.add {
+  filename = {
+    ['kitty.conf'] = 'kitty',
+    ['~/.config/kitty/**.conf'] = 'kitty',
+  },
+}

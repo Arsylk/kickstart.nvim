@@ -64,11 +64,18 @@ return {
             },
           },
         },
-        ruff = {
+        pylsp = {
           settings = {
-            ruff = {
-              args = {},
+            pylsp = {
+              plugins = {
+                pycodestyle = { enabled = false },
+              },
             },
+          },
+        },
+        ruff = {
+          init_options = {
+            settings = {},
           },
         },
         gopls = {
@@ -87,13 +94,15 @@ return {
         },
       }
 
+      require('lspconfig.ui.windows').default_options.border = 'rounded'
+
       --  You can press `g?` for help in this menu.
-      require('mason').setup()
+      require('mason').setup { ui = { border = 'rounded' } }
 
       local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, { 'stylua' })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+      vim.list_extend(ensure_installed, { 'stylua', 'shfmt' })
 
+      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
       require('mason-lspconfig').setup {
         handlers = {
           function(server_name)

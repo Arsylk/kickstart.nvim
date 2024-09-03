@@ -2,6 +2,7 @@ return {
   {
     'nvimdev/dashboard-nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
+    enabled = vim.env.KITTY_SCROLLBACK_NVIM ~= 'true',
     event = 'VimEnter',
     config = function()
       require('dashboard').setup {
@@ -14,14 +15,21 @@ return {
             {
               icon = ' ',
               desc = 'new',
-              group = '@property',
+              group = '@string',
               action = 'enew',
               key = 'n',
             },
             {
+              icon = '󰋚 ',
+              desc = 'recent',
+              group = '@exception',
+              action = 'FzfLua oldfiles',
+              key = 'r',
+            },
+            {
               icon = ' ',
               desc = 'jumps',
-              group = '@string',
+              group = '@property',
               action = 'FzfLua jumps',
               key = 'j',
             },

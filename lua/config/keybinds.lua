@@ -25,7 +25,13 @@ map('n', '<C-Down>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Double Q to close current window
---map('n', 'qq', '<CMD>q<CR>', { silent = true, desc = 'CLose window' })
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'help' },
+  callback = function(params)
+    vim.keymap.set('n', 'qq', '<cmd>q<CR>', { noremap = true, buffer = params.buf, desc = 'Close window' })
+  end,
+})
+
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'vim' },
   callback = function(params)
@@ -48,48 +54,38 @@ map('n', '<C-Space>', function()
 end, { silent = true, desc = 'Open autocomplete' })
 
 -- Keep cursor centered when PgUp & PgDown
-map('n', '<PgDown>', '<C-d><C-d>', { desc = 'Page down' })
-map('n', '<PgUp>', '<C-u><C-u>', { desc = 'Page up' })
+map('n', '<PageDown>', '<C-d><C-d>zz', { desc = 'Page down' })
+map('n', '<PageUp>', '<C-u><C-u>zz', { desc = 'Page up' })
 map('n', '<C-d>', '<C-d>zz', { desc = 'Half page down' })
 map('n', '<C-u>', '<C-u>zz', { desc = 'Half page up' })
-map('n', 'n', 'nzzzv', { desc = 'so and so...' })
-map('n', 'N', 'Nzzzv', { desc = 'so and so...' })
+map('n', 'n', 'nzz', { noremap = true })
+map('n', 'N', 'Nzz', { noremap = true })
 
 -- Redirect command output and allow edit
 map('c', '<S-CR>', function()
   require('noice').redirect(vim.fn.getcmdline())
 end, { desc = 'Redirect Cmdline' })
 
+-- remap keys for "fold all" and "unfold all"
+vim.keymap.set('n', 'zR', function()
+  require('ufo').openAllFolds()
+end, { desc = 'Open all folds' })
+vim.keymap.set('n', 'zM', function()
+  require('ufo').closeAllFolds()
+end, { desc = 'Close all folds' })
+
 -- LSP mappings
-map('n', '<leader><leader>', function()
-  require('fzf-lua').buffers()
-end, { desc = '[ ] Find existing buffers' })
-map('n', '<leader>fh', function()
-  require('fzf-lua').help_tags()
-end, { desc = '[F]ind [H]elp' })
-map('n', '<leader>fk', function()
-  require('fzf-lua').keymaps()
-end, { desc = '[F]ind [K]eymaps' })
-map('n', '<leader>ff', function()
-  require('fzf-lua').find_files()
-end, { desc = '[F]ind [F]iles' })
-map('n', '<leader>fs', function()
-  require('fzf-lua').builtin()
-end, { desc = '[F]ind [S]elect FzfLua' })
-map('n', '<leader>fw', function()
-  require('fzf-lua').grep_string()
-end, { desc = '[F]ind current [W]ord' })
-map('n', '<leader>fg', function()
-  require('fzf-lua').live_grep()
-end, { desc = '[F]ind by [G]rep' })
+map('n', '<leader><leader>', '<Cmd>FzfLua buffers<CR>', { desc = '[ ] Find existing buffers' })
+map('n', '<leader>fh', '<Cmd>FzfLua help<CR>', { desc = '[F]ind [H]elp' })
+map('n', '<leader>fk', '<Cmd>FzfLua keymaps<CR>', { desc = '[F]ind [K]eymaps' })
+map('n', '<leader>ff', '<Cmd>FzfLua files<CR>', { desc = '[F]ind [F]iles' })
+map('n', '<leader>fs', '<Cmd>FzfLua builtin<CR>', { desc = '[F]ind [S]elect FzfLua' })
+map('n', '<leader>fw', '<Cmd>FzfLua grep_cword<CR>', { desc = '[F]ind current [W]ord' })
+map('n', '<leader>fg', '<Cmd>FzfLua live_grep<CR>', { desc = '[F]ind by [G]rep' })
 map('n', '<leader>fd', '<Cmd>FzfLua diagnostics_document<CR>', { desc = '[F]ind [D]iagnostics' })
-map('n', '<leader>fr', function()
-  require('fzf-lua').resume()
-end, { desc = '[F]ind [R]esume' })
-map('n', '<leader>f.', function()
-  require('fzf-lua').oldfiles()
-end, { desc = '[F]ind Recent Files [.]' })
-vim.keymap.set('n', '<leader>fn', '<Cmd>FzfLua files cwd=$HOME/.config/nvim<CR>', { desc = '[F]ind [N]eovim files' })
+map('n', '<leader>fr', '<Cmd>FzfLua resume<CR>', { desc = '[F]ind [R]esume' })
+map('n', '<leader>f.', '<Cmd>FzfLua oldfiles<CR>', { desc = '[F]ind Recent Files [.]' })
+map('n', '<leader>fn', '<Cmd>FzfLua files cwd=$HOME/.config/nvim<CR>', { desc = '[F]ind [N]eovim files' })
 
 -- map('n', '<leader>fy', extensions.yank_history.yank_history, { desc = '[F]ind [Y]ank History' })
 
@@ -105,7 +101,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     map('<leader>ca', fzf.lsp_code_actions, '[C]ode [A]ctions')
     map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
 
-    map('gf', fzf.lsp_definitions, '[G]oto Lsp [F]inder')
+    map('gf', fzf.lsp_finder, '[G]oto Lsp [F]inder')
     map('gd', fzf.lsp_definitions, '[G]oto [D]efinition')
     map('gr', fzf.lsp_references, '[G]oto [R]eferences')
     map('gi', fzf.lsp_implementations, '[G]oto [I]mplementation')
@@ -161,3 +157,8 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
     map('n', '<leader>tD', gitsigns.toggle_deleted, '[T]oggle show [D]eleted')
   end,
 })
+
+-- Autopair toggle
+map('n', '<leader>ta', function()
+  require('nvim-autopairs').toggle()
+end, { desc = '[T]oggle auto pairs' })

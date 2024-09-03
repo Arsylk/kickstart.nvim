@@ -1,158 +1,220 @@
+local kinds = {
+  Array = ' ',
+  Boolean = '󰨙 ',
+  Class = ' ',
+  Codeium = '󰘦 ',
+  Color = ' ',
+  Control = ' ',
+  Collapsed = ' ',
+  Constant = '󰏿 ',
+  Constructor = ' ',
+  Copilot = ' ',
+  Enum = ' ',
+  EnumMember = ' ',
+  Event = ' ',
+  Field = ' ',
+  File = ' ',
+  Folder = ' ',
+  Function = '󰊕 ',
+  Interface = ' ',
+  Key = ' ',
+  Keyword = ' ',
+  Method = '󰊕 ',
+  Module = ' ',
+  Namespace = '󰦮 ',
+  Null = ' ',
+  Number = '󰎠 ',
+  Object = ' ',
+  Operator = ' ',
+  Package = ' ',
+  Property = ' ',
+  Reference = ' ',
+  Snippet = ' ',
+  String = ' ',
+  Struct = '󰆼 ',
+  TabNine = '󰏚 ',
+  Text = ' ',
+  TypeParameter = ' ',
+  Unit = ' ',
+  Value = ' ',
+  Variable = '󰀫 ',
+}
+
 return {
   {
     'hrsh7th/nvim-cmp',
-    event = 'InsertEnter',
     dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
-      {
-        'L3MON4D3/LuaSnip',
-        build = (function()
-          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
-            return
-          end
-          return 'make install_jsregexp'
-        end)(),
-        dependencies = {
-          {
-            'rafamadriz/friendly-snippets',
-            config = function()
-              require('luasnip.loaders.from_vscode').lazy_load()
-            end,
-          },
-        },
-      },
+      { 'L3MON4D3/LuaSnip', build = 'make install_jsregexp' },
+      'saadparwaiz1/cmp_luasnip',
+      'windwp/nvim-autopairs',
       'onsails/lspkind.nvim',
       {
         'hrsh7th/cmp-nvim-lsp',
         dependencies = {
-          'hrsh7th/cmp-path',
           'hrsh7th/cmp-nvim-lua',
-          'hrsh7th/cmp-cmdline',
           'hrsh7th/cmp-buffer',
-          'ray-x/cmp-treesitter',
-          'saadparwaiz1/cmp_luasnip',
+          'hrsh7th/cmp-path',
+          'hrsh7th/cmp-cmdline',
         },
       },
     },
-    config = function()
-      -- see `:help cmp`
+    event = 'InsertEnter',
+    opts = function()
+      vim.api.nvim_set_hl(0, 'CmpGhostText', { link = 'Comment', default = true })
       local cmp = require 'cmp'
-      local lspkind = require 'lspkind'
-      local luasnip = require 'luasnip'
-      luasnip.config.setup {}
+      local lsp_kind = require 'lspkind'
+      lsp_kind.init()
 
-      cmp.setup {
+      local defaults = require 'cmp.config.default'()
+
+      local function confirm_fn(opts)
+        return function(fallback)
+          opts = vim.tbl_extend('force', {
+            select = true,
+            behavior = cmp.ConfirmBehavior.Insert,
+          }, opts or {})
+          if cmp.core.view:visible() or vim.fn.pumvisible() == 1 then
+            if cmp.confirm(opts) then
+              return
+            end
+          end
+          return fallback()
+        end
+      end
+
+      return {
+        preselect = cmp.PreselectMode.Item,
+        window = {
+          completion = cmp.config.window.bordered {
+            winhighlight = 'Normal:Normal,FloatBorder:LspBorderBG,CursorLine:PmenuSel,Search:None',
+          },
+          documentation = cmp.config.window.bordered {
+            winhighlight = 'Normal:Normal,FloatBorder:LspBorderBG,CursorLine:PmenuSel,Search:None',
+          },
+        },
+        view = {
+          entries = 'bordered',
+        },
         snippet = {
           expand = function(args)
-            vim.snippet.expand(args.body)
+            require('luasnip').lsp_expand(args.body)
           end,
         },
-        completion = { completeopt = 'menu,menuone,noinsert' },
-        -- for an understanding of why these mappings were
-        -- chosen, you will need to reaźd `:help ins-completion`
-        --
-        -- no, but seriously. please read `:help ins-completion`, it is really good!
+        completion = {
+          completeopt = 'menu,menuone,noinsert,noselect',
+        },
         mapping = cmp.mapping.preset.insert {
-          ['<c-n>'] = cmp.mapping.select_next_item(),
-          ['<c-p>'] = cmp.mapping.select_prev_item(),
-          ['<c-pgdown'] = cmp.mapping.scroll_docs(-4),
-          ['<c-pgup>'] = cmp.mapping.scroll_docs(4),
-          ['<cr>'] = cmp.mapping.confirm { select = true },
-          ['<c-space>'] = cmp.mapping.complete {},
-          ['<tab>'] = cmp.mapping(function(fallback)
+          ['<C-n>'] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
+          ['<C-p>'] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
+          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-f>'] = cmp.mapping.scroll_docs(4),
+          ['<C-Space>'] = cmp.mapping.complete(),
+          ['<C-e>'] = cmp.mapping.abort(),
+          ['<CR>'] = confirm_fn { behavior = cmp.ConfirmBehavior.Replace },
+          ['<S-CR>'] = confirm_fn(),
+          ['<Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
-            elseif luasnip.locally_jumpable(1) then
-              luasnip.jump(1)
             else
-              fallback()
+              local luasnip, err = pcall(require, 'luasnip')
+              if not err and luasnip.expand_or_jumpable() then
+                luasnip.expand_or_jump()
+              else
+                fallback()
+              end
             end
           end, { 'i', 's' }),
 
-          ['<s-tab>'] = cmp.mapping(function(fallback)
+          ['<S-Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
-            elseif luasnip.locally_jumpable(-1) then
-              luasnip.jump(-1)
             else
-              fallback()
+              local luasnip, err = pcall(require, 'luasnip')
+              if not err and luasnip.expand_or_jumpable() then
+                luasnip.jump(-1)
+              else
+                fallback()
+              end
             end
           end, { 'i', 's' }), -- for more advanced luasnip keymaps (e.g. selecting choice nodes, expansion) see:
-          --    https://github.com/l3mon4d3/luasnip?tab=readme-ov-file#keymaps
         },
-        window = {
-          completion = cmp.config.window.bordered {
-            scrollbar = false,
-            col_offset = -3,
-            side_padding = 0,
-            winhighlight = 'normal:normal,floatborder:floatborder,cursorline:visual,search:none',
-          },
-          documentation = cmp.config.window.bordered {
-            winhighlight = 'normal:normal,floatborder:floatborder,cursorline:visual,search:none',
-          },
+        sources = {
+          { name = 'lazydev', group_index = 0 },
+          { name = 'luasnip', max_item_count = 5, group_index = 1 },
+          { name = 'nvim_lsp', max_item_count = 20, group_index = 1 },
+          { name = 'nvim_lua', group_index = 1 },
+          { name = 'path', group_index = 2 },
+          { name = 'buffer', keyword_length = 2, max_item_count = 5, group_index = 2 },
+          { name = 'treesitter', group_index = 3 },
         },
         formatting = {
-          expandable_indicator = true,
           fields = { 'kind', 'abbr', 'menu' },
-          format = function(entry, vim_item)
-            local kind = lspkind.cmp_format {
-              mode = 'symbol_text',
-              maxwidth = 50,
-            }(entry, vim_item)
-            local strings = vim.split(kind.kind, '%s', { trimempty = true })
-            kind.kind = ' ' .. strings[1] .. ' '
-            kind.menu = '    (' .. strings[2] .. ')'
-
-            return kind
+          --- @param ctx cmp.Entry
+          format = function(ctx, item)
+            local icons = kinds
+            if icons[item.kind] then
+              item.kind = icons[item.kind] .. item.kind
+            end
+            item.menu = ctx.source.name
+            return item
           end,
-        },
-        view = {
-          entries = { name = 'custom', selection_order = 'near_cursor' },
         },
         experimental = {
-          ghost_text = true,
+          ghost_text = {
+            hl_group = 'CmpGhostText',
+          },
         },
-        sources = cmp.config.sources({
-          name = 'lazydev',
-          group_index = 0,
-        }, {
-          name = 'luasnip',
-          group_index = 1,
-          option = { use_show_condition = true },
-          entry_filter = function()
-            local context = require 'cmp.config.context'
-            return not context.in_treesitter_capture 'string' and not context.in_syntax_group 'string'
-          end,
-        }, {
-          name = 'nvim_lsp',
-          group_index = 2,
-        }, {
-          name = 'nvim_lua',
-          group_index = 3,
-        }, {
-          name = 'treesitter',
-          group_index = 4,
-          keyword_length = 4,
-        }, {
-          name = 'path',
-          group_index = 5,
-        }, {
-          name = 'buffer',
-          group_index = 5,
-        }),
+        sorting = defaults.sorting,
       }
+    end,
+    ---@param opts cmp.ConfigSchema
+    config = function(_, opts)
+      for _, source in ipairs(opts.sources) do
+        source.group_index = source.group_index or 1
+      end
+      local cmp = require 'cmp'
+      cmp.setup(opts)
+      -- cmp.setup.cmdline(':', {
+      --   mapping = cmp.mapping.preset.cmdline {
+      --     ['<C-p>'] = cmp.mapping.open_docs,
+      --   },
+      --   sources = {
+      --     { name = 'lazydev', group_index = 0 },
+      --     { name = 'cmdline', group_index = 1, max_item_count = 10 },
+      --     { name = 'path', group_index = 2 },
+      --   },
+      -- })
+      -- cmp.setup.cmdline('/', {
+      --   mapping = cmp.mapping.preset.cmdline {},
+      --   sources = cmp.config.sources {
+      --     { name = 'buffer' },
+      --   },
+      -- })
+      -- cmp.setup.cmdline(':lua', {
+      --   mapping = cmp.mapping.preset.cmdline {},
+      --   sources = cmp.config.sources {
+      --     { name = 'nvim_lsp' },
+      --     { name = 'nvim_lua' },
+      --     { name = 'path' },
+      --   },
+      -- })
 
       local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
       cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-
-      cmp.setup.cmdline(':', {
-        mapping = cmp.mapping.preset.cmdline {},
-        sources = cmp.config.sources {
-          { name = 'cmdline' },
-          { name = 'nvim_lua' },
-          { name = 'path' },
-        },
-      })
+      cmp.event:on('menu_opened', function(event)
+        local entries = event.window:get_entries()
+        for _, entry in ipairs(entries) do
+          if entry:get_kind() == cmp.lsp.CompletionItemKind.Snippet then
+            local item = entry:get_completion_item()
+            if not item.documentation and item.insertText then
+              item.documentation = {
+                kind = cmp.lsp.MarkupKind.Markdown,
+                value = string.format('```%s\n%s\n```', vim.bo.filetype, tostring(item.insertText)),
+              }
+            end
+          end
+        end
+      end)
     end,
   },
 }
