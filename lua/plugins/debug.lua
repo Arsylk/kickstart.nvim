@@ -1,29 +1,89 @@
--- debug.lua
---
--- Shows how to use the DAP plugin to debug your code.
---
--- Primarily focused on configuring the debugger for Go, but can
--- be extended to other languages as well. That's why it's called
--- kickstart.nvim and not kitchen-sink.nvim ;)
+local function roots()
+  return coroutine.wrap(function()
+    local cwd = vim.fn.getcwd()
+    coroutine.yield(cwd)
+
+    local wincwd = vim.fn.getcwd(0)
+    if wincwd ~= cwd then
+      coroutine.yield(wincwd)
+    end
+
+    ---@diagnostic disable-next-line: deprecated
+    local get_clients = vim.lsp.get_clients or vim.lsp.get_active_clients
+    for _, client in ipairs(get_clients()) do
+      if client.config.root_dir then
+        coroutine.yield(client.config.root_dir)
+      end
+    end
+  end)
+end
+
+local is_windows = function()
+  return vim.fn.has 'win32' == 1
+end
+
+local function python_exe(venv)
+  if is_windows() then
+    return venv .. '\\Scripts\\python.exe'
+  end
+  return venv .. '/bin/python'
+end
+
+local get_python_path = function()
+  local uv = vim.uv or vim.loop
+
+  local venv_path = os.getenv 'VIRTUAL_ENV'
+  if venv_path then
+    return python_exe(venv_path)
+  end
+
+  venv_path = os.getenv 'CONDA_PREFIX'
+  if venv_path then
+    if is_windows() then
+      return venv_path .. '\\python.exe'
+    end
+    return venv_path .. '/bin/python'
+  end
+
+  for root in roots() do
+    for _, folder in ipairs { 'venv', '.venv', 'env', '.env' } do
+      local path = root .. '/' .. folder
+      local stat = uv.fs_stat(path)
+      if stat and stat.type == 'directory' then
+        return python_exe(path)
+      end
+    end
+  end
+
+  return nil
+end
+
+local get_python_opts = function()
+  return {
+    include_configs = true,
+  }
+end
 
 return {
-  -- NOTE: Yes, you can install new plugins here!
   'mfussenegger/nvim-dap',
-  -- NOTE: And you can specify dependencies as well
   dependencies = {
-    -- Creates a beautiful debugger UI
     'rcarriga/nvim-dap-ui',
-
-    -- Required dependency for nvim-dap-ui
     'nvim-neotest/nvim-nio',
-
-    -- Installs the debug adapters for you
     'williamboman/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
 
     -- Add your own debuggers here
     'leoluz/nvim-dap-go',
+    'mfussenegger/nvim-dap-python',
   },
+  init = function()
+    vim.api.nvim_create_autocmd('DirChanged', {
+      desc = 'Detect pyton VirtualEnv path',
+      callback = function()
+        require('dap-python').setup(get_python_path(), get_python_opts())
+      end,
+    })
+  end,
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
@@ -92,5 +152,8 @@ return {
         detached = vim.fn.has 'win32' == 0,
       },
     }
+
+    -- Install python specific config
+    require('dap-python').setup(get_python_path(), get_python_opts())
   end,
 }

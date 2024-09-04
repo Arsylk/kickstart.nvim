@@ -18,11 +18,25 @@ end, { noremap = true, desc = 'Command paste' })
 map('n', '<C-v>', '"+p', { desc = 'Command paste' })
 map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste' })
 
+-- Open ripgrep replace Ctrl+R
+map('n', '<C-r>', function()
+  require('rip-substitute').sub()
+end, { desc = ' rip substitute' })
+
 -- Move between windows with arrows
 map('n', '<C-Left>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 map('n', '<C-Right>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 map('n', '<C-Down>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+-- Don't yank on delete char
+map('n', 'x', '"_x', {})
+map('n', 'X', '"_X', {})
+map('v', 'x', '"_x', {})
+map('v', 'X', '"_X', {})
+
+-- Don't yank on visual paste
+map('v', 'p', '"_dP', {})
 
 -- Double Q to close current window
 vim.api.nvim_create_autocmd('FileType', {

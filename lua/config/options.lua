@@ -34,6 +34,5 @@ end
 vim.filetype.add {
   filename = {
     ['kitty.conf'] = 'kitty',
-    ['~/.config/kitty/**.conf'] = 'kitty',
   },
 }

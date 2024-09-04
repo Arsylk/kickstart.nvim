@@ -74,8 +74,8 @@ return {
           },
         },
         ruff = {
-          init_options = {
-            settings = {},
+          settings = {
+            init_options = {},
           },
         },
         gopls = {
