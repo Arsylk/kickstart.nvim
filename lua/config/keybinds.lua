@@ -88,6 +88,7 @@ map('n', '<leader>f.', '<Cmd>FzfLua oldfiles<CR>', { desc = '[F]ind Recent Files
 map('n', '<leader>fn', '<Cmd>FzfLua files cwd=$HOME/.config/nvim<CR>', { desc = '[F]ind [N]eovim files' })
 
 -- map('n', '<leader>fy', extensions.yank_history.yank_history, { desc = '[F]ind [Y]ank History' })
+map('n', '<F12>', '<Cmd>OverseerRun<CR>', { desc = 'Run Overseer task' })
 
 -- LSP buffer specific mappings
 vim.api.nvim_create_autocmd('LspAttach', {

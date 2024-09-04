@@ -1,3 +1,5 @@
+std = 'max'
+
 globals = {
   'vim',
   'assert',
