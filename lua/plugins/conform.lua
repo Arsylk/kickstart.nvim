@@ -32,6 +32,9 @@ return {
         lua = { 'stylua' },
         javascript = { 'biome' },
         typescript = { 'biome' },
+        json = { 'biome' },
+        sh = { 'fmtsh' },
+        bash = { 'fmtsh' },
         python = { 'ruff_format' },
       },
       format_on_save = function(bufnr)

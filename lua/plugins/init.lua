@@ -32,6 +32,10 @@ return {
         dap = true,
         lsp_trouble = true,
         overseer = true,
+        illuminate = {
+          enabled = true,
+          lsp = true,
+        },
       },
       term_colors = true,
     },

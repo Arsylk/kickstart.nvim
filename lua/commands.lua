@@ -13,10 +13,27 @@ end
 vim.api.nvim_create_user_command('Redir', function(ctx)
   local exec = vim.api.nvim_exec2(ctx.args, { output = true })
   local lines = vim.split(exec.output, '\n', { plain = true })
-  vim.cmd 'new'
+  vim.cmd [[new]]
   vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
   vim.opt_local.modified = false
 end, { nargs = '+', complete = 'command' })
+
+-- Conform pretty format command
+vim.api.nvim_create_user_command('ConformFormat', function()
+  local fmt = require('conform').list_formatters_for_buffer(0)[1]
+  local msg = ('Running %s on %s'):format(fmt, vim.api.nvim_buf_get_name(0))
+
+  local record = vim.notify(msg, vim.log.levels.INFO, {})
+  require('conform').format({ async = true, lsp_fallback = true }, function(err, did_edit)
+    if err then
+      vim.notify(('Error from %s'):format(fmt), vim.log.levels.ERROR, { replace = record })
+    elseif did_edit then
+      vim.notify('File formatted successfully', vim.log.levels.INFO, { replace = record })
+    else
+      vim.notify('File is already formatted', vim.log.levels.INFO, { replace = record })
+    end
+  end)
+end, { desc = 'Format current buffer with Conform', nargs = 0 })
 
 -- Perform live(ish) command operations
 vim.api.nvim_create_user_command('Playdict', function(ctx)

@@ -24,7 +24,7 @@ return {
             },
           },
         },
-        tsserver = {},
+        ts_ls = {},
         lua_ls = {
           settings = {
             Lua = {
@@ -74,8 +74,8 @@ return {
           },
         },
         ruff = {
-          init_options = {
-            settings = {},
+          settings = {
+            init_options = {},
           },
         },
         gopls = {

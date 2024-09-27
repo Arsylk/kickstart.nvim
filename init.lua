@@ -154,6 +154,7 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 local opts = {
   ui = {
+    border = 'rounded',
     icons = vim.g.have_nerd_font and {} or {
       cmd = '⌘',
       config = '🛠',
@@ -169,8 +170,31 @@ local opts = {
       task = '📌',
       lazy = '💤 ',
     },
-    checker = {
-      enabled = true,
+  },
+  checker = {
+    enabled = true,
+  },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        'gzip',
+        'matchit',
+        'matchparen',
+        'netrw',
+        'netrwPlugin',
+        'netrwSettings',
+        'netrwFileHandlers',
+        'tar',
+        'tarPlugin',
+        'getscript',
+        'getscriptPlugin',
+        'vimball',
+        'vimballPlugin',
+        'tohtml',
+        'tutor',
+        'zip',
+        'zipPlugin',
+      },
     },
   },
 }

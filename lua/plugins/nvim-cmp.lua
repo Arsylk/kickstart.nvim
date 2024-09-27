@@ -40,6 +40,12 @@ local kinds = {
   Variable = '󰀫 ',
 }
 
+local has_words_before = function()
+  unpack = unpack or table.unpack
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match '%s' == nil
+end
+
 return {
   {
     'hrsh7th/nvim-cmp',
@@ -104,8 +110,6 @@ return {
           completeopt = 'menu,menuone,noinsert,noselect',
         },
         mapping = cmp.mapping.preset.insert {
-          ['<C-n>'] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
-          ['<C-p>'] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
           ['<C-f>'] = cmp.mapping.scroll_docs(4),
           ['<C-Space>'] = cmp.mapping.complete(),
@@ -116,27 +120,28 @@ return {
             if cmp.visible() then
               cmp.select_next_item()
             else
-              local luasnip, err = pcall(require, 'luasnip')
-              if not err and luasnip.expand_or_jumpable() then
+              local success, luasnip = pcall(require, 'luasnip')
+              if success and luasnip.expand_or_locally_jumpable() then
                 luasnip.expand_or_jump()
+              elseif has_words_before() then
+                cmp.complete()
               else
                 fallback()
               end
             end
           end, { 'i', 's' }),
-
           ['<S-Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
             else
-              local luasnip, err = pcall(require, 'luasnip')
-              if not err and luasnip.expand_or_jumpable() then
+              local success, luasnip = pcall(require, 'luasnip')
+              if success and luasnip.jumpable(-1) then
                 luasnip.jump(-1)
               else
                 fallback()
               end
             end
-          end, { 'i', 's' }), -- for more advanced luasnip keymaps (e.g. selecting choice nodes, expansion) see:
+          end, { 'i', 's' }),
         },
         sources = {
           { name = 'lazydev', group_index = 0 },
@@ -174,30 +179,6 @@ return {
       end
       local cmp = require 'cmp'
       cmp.setup(opts)
-      -- cmp.setup.cmdline(':', {
-      --   mapping = cmp.mapping.preset.cmdline {
-      --     ['<C-p>'] = cmp.mapping.open_docs,
-      --   },
-      --   sources = {
-      --     { name = 'lazydev', group_index = 0 },
-      --     { name = 'cmdline', group_index = 1, max_item_count = 10 },
-      --     { name = 'path', group_index = 2 },
-      --   },
-      -- })
-      -- cmp.setup.cmdline('/', {
-      --   mapping = cmp.mapping.preset.cmdline {},
-      --   sources = cmp.config.sources {
-      --     { name = 'buffer' },
-      --   },
-      -- })
-      -- cmp.setup.cmdline(':lua', {
-      --   mapping = cmp.mapping.preset.cmdline {},
-      --   sources = cmp.config.sources {
-      --     { name = 'nvim_lsp' },
-      --     { name = 'nvim_lua' },
-      --     { name = 'path' },
-      --   },
-      -- })
 
       local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
       cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())

@@ -3,6 +3,7 @@ local map = vim.keymap.set
 -- The good 'ol keybinds
 map('n', '<C-a>', 'ggVG$', { noremap = true, silent = true })
 map({ 'i', 'n' }, '<C-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
+map({ 'i', 'n' }, '<D-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
 map('n', '<C-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
 
 -- Activate Ctrl+V as paste
@@ -18,11 +19,25 @@ end, { noremap = true, desc = 'Command paste' })
 map('n', '<C-v>', '"+p', { desc = 'Command paste' })
 map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste' })
 
+-- Open ripgrep replace Ctrl+R
+map('n', '<D-r>', function()
+  require('rip-substitute').sub()
+end, { desc = ' rip substitute' })
+
 -- Move between windows with arrows
 map('n', '<C-Left>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 map('n', '<C-Right>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 map('n', '<C-Down>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+-- Don't yank on delete char
+map('n', 'x', '"_x', {})
+map('n', 'X', '"_X', {})
+map('v', 'x', '"_x', {})
+map('v', 'X', '"_X', {})
+
+-- Don't yank on visual paste
+map('v', 'p', '"_dP', {})
 
 -- Double Q to close current window
 vim.api.nvim_create_autocmd('FileType', {
@@ -163,3 +178,9 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
 map('n', '<leader>ta', function()
   require('nvim-autopairs').toggle()
 end, { desc = '[T]oggle auto pairs' })
+
+-- Toggle debugger ui
+
+vim.keymap.set('n', '<F7>', function()
+  require('dapui').toggle()
+end, { desc = 'Debug: See last session result.' })

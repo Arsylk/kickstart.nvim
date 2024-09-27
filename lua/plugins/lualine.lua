@@ -57,6 +57,7 @@ return {
           theme = 'catppuccin',
           component_separators = '',
           section_separators = { left = '', right = '' },
+          globalstatus = true,
         },
         tabline = {
           lualine_a = {},
