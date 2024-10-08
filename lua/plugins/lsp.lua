@@ -24,7 +24,6 @@ return {
             },
           },
         },
-        tsserver = {},
         lua_ls = {
           settings = {
             Lua = {

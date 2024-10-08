@@ -19,7 +19,7 @@ map('n', '<C-v>', '"+p', { desc = 'Command paste' })
 map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste' })
 
 -- Open ripgrep replace Ctrl+R
-map('n', '<C-r>', function()
+map('n', '<C-rp>', function()
   require('rip-substitute').sub()
 end, { desc = ' rip substitute' })
 
@@ -75,6 +75,10 @@ map('n', '<C-u>', '<C-u>zz', { desc = 'Half page up' })
 map('n', 'n', 'nzz', { noremap = true })
 map('n', 'N', 'Nzz', { noremap = true })
 
+-- Overseer toggle window
+map('n', '<F12>', '<Cmd>OverseerToggle<CR>', { desc = 'Toggle Overseer window' })
+map('n', '<S-F12>', '<Cmd>OverseerRun<CR>', { noremap = true, desc = 'Overseer Run' })
+
 -- Redirect command output and allow edit
 map('c', '<S-CR>', function()
   require('noice').redirect(vim.fn.getcmdline())
@@ -100,8 +104,9 @@ map('n', '<leader>fd', '<Cmd>FzfLua diagnostics_document<CR>', { desc = '[F]ind 
 map('n', '<leader>fr', '<Cmd>FzfLua resume<CR>', { desc = '[F]ind [R]esume' })
 map('n', '<leader>f.', '<Cmd>FzfLua oldfiles<CR>', { desc = '[F]ind Recent Files [.]' })
 map('n', '<leader>fn', '<Cmd>FzfLua files cwd=$HOME/.config/nvim<CR>', { desc = '[F]ind [N]eovim files' })
-
--- map('n', '<leader>fy', extensions.yank_history.yank_history, { desc = '[F]ind [Y]ank History' })
+map('n', '<leader>fy', function()
+  require 'neoclip.fzf'()
+end, { desc = '[F]ind [Y]ank History' })
 
 -- LSP buffer specific mappings
 vim.api.nvim_create_autocmd('LspAttach', {
