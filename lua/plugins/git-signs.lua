@@ -22,7 +22,10 @@ return {
     },
     config = function(_, opts)
       require('gitsigns').setup(opts)
-      require('scrollbar.handlers.gitsigns').setup()
+      local ok, scrollbar = pcall(require, 'scrollbar.handlers.gitsigns')
+      if ok then
+        scrollbar.setup()
+      end
     end,
   },
 }

@@ -36,6 +36,14 @@ return {
         sh = { 'fmtsh' },
         bash = { 'fmtsh' },
         python = { 'ruff_format' },
+        caddyfile = { 'caddyfile' },
+      },
+      formatters = {
+        caddyfile = {
+          command = 'caddy',
+          args = { 'fmt', '-' },
+          stdin = true,
+        },
       },
       format_on_save = function(bufnr)
         local disable_filetypes = {

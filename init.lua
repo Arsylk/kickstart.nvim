@@ -200,6 +200,7 @@ local opts = {
 }
 
 require 'commands'
+require 'utils.android'
 require 'fancyutil'
 require 'config.options'
 require 'config.keybinds'

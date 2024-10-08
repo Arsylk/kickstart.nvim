@@ -4,15 +4,16 @@ return {
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
       keymap = {
+        builtin = {
+          false,
+          ['<F1>'] = 'toggle-help',
+          ['<F2>'] = 'toggle-preview',
+        },
         fzf = {
+          ['ctrl-a'] = 'toggle-all',
           ['ctrl-q'] = 'select-all+accept',
         },
       },
     },
-    config = function(_, opts)
-      require('fzf-lua').setup(opts)
-      local ui_select = require 'fzf-lua.providers.ui_select'
-      ui_select.register(opts, false, opts)
-    end,
   },
 }

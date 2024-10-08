@@ -148,3 +148,54 @@ vim.api.nvim_create_user_command('OverseerRestartLast', function()
     overseer.run_action(tasks[1], 'restart')
   end
 end, {})
+
+-- fzf pick android package
+vim.api.nvim_create_user_command('FzfLuaAndroidPkg', function()
+  local fzf = require 'fzf-lua'
+  local utils = require 'fzf-lua.utils'
+
+  local cmd = [[adb shell pm list packages -3 -f -U | sort -g -t ':' -k3]]
+  local contents = function(fzf_cb)
+    coroutine.wrap(function()
+      local co = coroutine.running()
+
+      vim.schedule(function()
+        local processline = function(line)
+          local path, pkg, uid = line:match '^package:(.-)=([%w%.%-]+)%s+uid:(%d+)$'
+          local entry = string.format('%s|%s uid:%s\n%s', path, pkg, uid, utils.ansi_from_hl('Comment', path))
+          return entry
+        end
+
+        local output = vim.fn.system(cmd)
+        local lines = vim.split(output, '\n', { plain = true })
+        table.remove(lines)
+        for _, line in pairs(lines) do
+          local entry = processline(line)
+          fzf_cb(entry, function()
+            coroutine.resume(co)
+          end)
+        end
+      end)
+
+      coroutine.yield()
+      fzf_cb()
+    end)()
+  end
+  fzf.fzf_exec(contents, {
+    multiline = 2,
+    fzf_opts = {
+      ['--prompt'] = 'Package> ',
+      ['--delimiter'] = '\\|',
+      ['--with-nth'] = '2..',
+    },
+    preview = 'adb shell run-as com.termux "/data/data/com.termux/files/usr/bin/aapt2 dump badging {1}" | grep -v \'\\(application-label-\\|application-icon-\\)\'',
+    actions = {
+      ['default'] = function(selected)
+        if selected and #selected > 0 then
+          local item = string.match(selected[1], '|([%w%.]+) ')
+          vim.notify(vim.inspect(item))
+        end
+      end,
+    },
+  })
+end, {})
