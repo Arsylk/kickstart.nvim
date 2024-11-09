@@ -16,10 +16,11 @@ vim.api.nvim_create_autocmd('FileType', {
   callback = function(params)
     vim.schedule(function()
       vim.api.nvim_create_autocmd('BufWritePost', {
+        buffer = params.buf,
+        once = true,
         callback = function(ctx)
           vim.schedule(function()
-            vim.notify 'hi !~~~'
-            -- vim.api.nvim_buf_delete(ctx.buf, {})
+            vim.api.nvim_buf_delete(ctx.buf, {})
           end)
         end,
       })
