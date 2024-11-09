@@ -9,3 +9,17 @@ vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
     end
   end,
 })
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'gitcommit', 'gitrebase' },
+  desc = 'Auto delete git commit and rebase buffers',
+  callback = function(params)
+    vim.api.nvim_create_autocmd('BufWritePost', {
+      buffer = 0,
+      once = true,
+      callback = vim.schedule(function()
+        vim.api.nvim_buf_delete(0, {})
+      end),
+    })
+  end,
+})
