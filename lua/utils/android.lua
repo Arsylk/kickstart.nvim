@@ -1,3 +1,6 @@
+local CLOCKWORK_PATH = '~/Projects/Typescript/frida-clockwork/'
+vim.g.lastpackage = nil
+
 --- @param device_id string?
 --- @param cmd string?
 --- @return string
@@ -51,7 +54,11 @@ local pick_package = function(device_id, cb)
   local fzf = require 'fzf-lua'
   local utils = require 'fzf-lua.utils'
 
-  local cmd = adb(device_id, [[shell pm list packages -3 -f -U | sort -g -t ':' -k3]])
+  local cmd = adb(device_id, [[shell pm list packages -3 -f -U | sort -r -g -t ':' -k3]])
+  local pkgId = function(line)
+    return (tostring(line)):match '^([^|]+)|'
+  end
+
   local contents = function(fzf_cb)
     coroutine.wrap(function()
       local co = coroutine.running()
@@ -60,15 +67,25 @@ local pick_package = function(device_id, cb)
         local processline = function(line)
           local path, pkg, uid = line:match '^package:(.-)=([%w%.%-_]+)%s+uid:(%d+)$'
           local entry = string.format('%s|%s %s\n%s', pkg, pkg, utils.ansi_from_hl('Comment', ('uid:%s'):format(uid)), utils.ansi_from_hl('Conceal', path))
-          return entry
+          return entry, pkg
         end
 
         local output = vim.fn.system(cmd)
         local lines = vim.split(output, '\n', { plain = true })
         table.remove(lines)
+
+        local items = {}
         for _, line in pairs(lines) do
-          local entry = processline(line)
-          fzf_cb(entry, function()
+          local entry, pkg = processline(line)
+          if pkg == vim.g.lastpackage then
+            table.insert(items, 0, entry)
+          else
+            table.insert(items, entry)
+          end
+        end
+
+        for _, item in pairs(items) do
+          fzf_cb(item, function()
             coroutine.resume(co)
           end)
         end
@@ -78,8 +95,14 @@ local pick_package = function(device_id, cb)
       fzf_cb()
     end)()
   end
+
   fzf.fzf_exec(contents, {
     multiline = 2,
+    winopts = {
+      height = 0.85,
+      width = 0.5,
+      col = 0.5,
+    },
     fzf_opts = {
       ['--border'] = 'top',
       ['--border-label'] = device_id,
@@ -90,13 +113,19 @@ local pick_package = function(device_id, cb)
       ['--with-nth'] = '2..',
       ['-i'] = true,
       ['-e'] = true,
+      ['--cycle'] = true,
+      ['--track'] = true,
+      ['--tiebreak'] = 'index',
     },
     preview = [[ adb shell pm dump {1} | grep -A20 '^Packages:' ]],
     actions = {
       ['default'] = function(selected)
         if selected and #selected > 0 then
-          local item = string.match(selected[1], '^([^|]+)|')
-          cb(item)
+          local pkg = pkgId(selected[1])
+          if pkg ~= nil then
+            vim.g.lastpackage = pkg
+          end
+          cb(pkg)
         end
       end,
     },
@@ -123,17 +152,13 @@ local function pick(callback)
   end)()
 end
 
-local _term = nil
 --- @return Terminal
 local function term()
-  if _term then
-    return _term
-  end
   local Terminal = require('toggleterm.terminal').Terminal
-  _term = Terminal:new {
+  return Terminal:new {
     id = 5555,
     display_name = 'frida-clockwork',
-    dir = '/opt/github/frida-clockwork',
+    dir = CLOCKWORK_PATH,
     close_on_exit = false,
     auto_scroll = true,
     direction = 'horizontal',
@@ -141,7 +166,6 @@ local function term()
       border = 'rounded',
     },
   }
-  return _term
 end
 
 --- @param device_id string|nil
@@ -162,9 +186,9 @@ vim.api.nvim_create_user_command('FridaSpawn', function()
   pick(function(device_id, package_id)
     local cmd = format_command(device_id, package_id)
     local tty = term()
-    vim.notify(vim.inspect(tty), vim.log.levels.WARN)
+    vim.notify(cmd, vim.log.levels.WARN)
     tty:shutdown()
-    tty:open()
+    tty:open(40, 'horizontal')
     tty:send(cmd)
   end)
 end, { nargs = 0 })
@@ -180,7 +204,7 @@ vim.api.nvim_create_autocmd('User', {
 
     overseer.new_task {
       name = 'build: watch',
-      cwd = '/opt/github/frida-clockwork',
+      cwd = CLOCKWORK_PATH,
       strategy = {
         'orchestrator',
         tasks = {
@@ -189,7 +213,7 @@ vim.api.nvim_create_autocmd('User', {
               'shell',
               name = 'tsc: watch',
               cmd = 'npx tsc -b -w',
-              cwd = '/opt/github/frida-clockwork',
+              cwd = CLOCKWORK_PATH,
               components = {
                 {
                   'on_output_parse',
@@ -240,7 +264,7 @@ vim.api.nvim_create_autocmd('User', {
               'shell',
               name = 'webpack: watch',
               cmd = 'npx webpack --config webpack.config.js --watch --stats-error-details',
-              cwd = '/opt/github/frida-clockwork',
+              cwd = CLOCKWORK_PATH,
               components = {
                 {
                   'on_output_parse',
@@ -312,11 +336,11 @@ vim.api.nvim_create_autocmd('User', {
         if vim.v.shell_error == 0 then
           items = vim.split(output, '\n', { plain = true, trimempty = true })
         end
-        vim.notify(vim.inspect(items), vim.log.levels.WARN)
         return {
           device = {
             desc = 'Adb device',
             type = 'enum',
+            default = items[1],
             choices = items,
           },
           file = {
@@ -324,12 +348,18 @@ vim.api.nvim_create_autocmd('User', {
             type = 'string',
             default = 'nya-server-arm64',
           },
+          cmd = {
+            desc = 'Command ran in adb shell',
+            type = 'string',
+            default = 'su 0',
+            optional = true,
+          },
         }
       end,
       builder = function(params)
         local file = ('/data/local/tmp/%s'):format(params.file)
         return {
-          cmd = { 'adb', '-s', params.device, 'shell', 'su', '-c', file },
+          cmd = { 'adb', '-s', params.device, 'shell', params.cmd, file },
         }
       end,
     }

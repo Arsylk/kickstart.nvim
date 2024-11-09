@@ -20,11 +20,7 @@ map('n', '<C-v>', '"+p', { desc = 'Command paste' })
 map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste' })
 
 -- Open ripgrep replace Ctrl+R
-<<<<<<< HEAD
-map('n', '<D-r>', function()
-=======
 map('n', '<C-rp>', function()
->>>>>>> 328a935d8ed3158925691bca1d6d5cbb36e3ae7b
   require('rip-substitute').sub()
 end, { desc = ' rip substitute' })
 
@@ -109,15 +105,11 @@ map('n', '<leader>fd', '<Cmd>FzfLua diagnostics_document<CR>', { desc = '[F]ind 
 map('n', '<leader>fr', '<Cmd>FzfLua resume<CR>', { desc = '[F]ind [R]esume' })
 map('n', '<leader>f.', '<Cmd>FzfLua oldfiles<CR>', { desc = '[F]ind Recent Files [.]' })
 map('n', '<leader>fn', '<Cmd>FzfLua files cwd=$HOME/.config/nvim<CR>', { desc = '[F]ind [N]eovim files' })
-<<<<<<< HEAD
-
--- map('n', '<leader>fy', extensions.yank_history.yank_history, { desc = '[F]ind [Y]ank History' })
-map('n', '<F12>', '<Cmd>OverseerRun<CR>', { desc = 'Run Overseer task' })
-=======
 map('n', '<leader>fy', function()
   require 'neoclip.fzf'()
 end, { desc = '[F]ind [Y]ank History' })
->>>>>>> 328a935d8ed3158925691bca1d6d5cbb36e3ae7b
+
+map('n', '<F12>', '<Cmd>OverseerRun<CR>', { desc = 'Run Overseer task' })
 
 -- LSP buffer specific mappings
 vim.api.nvim_create_autocmd('LspAttach', {
