@@ -29,7 +29,7 @@ return {
 
     keymaps = {
       ['gd'] = {
-        desc = 'Toggle file detail view',
+        desc = 'Toggle file details on list',
         callback = function()
           vim.g.detail = not vim.g.detail
           if vim.g.detail then
@@ -39,14 +39,37 @@ return {
           end
         end,
       },
+      ['<F2>'] = {
+        desc = 'Open the entry under the cursor in a preview window, or close the preview window if already open',
+        callback = function()
+          local winid = require('oil.util').get_preview_win()
+          if winid then
+            -- hack'y way to reuse logic for dismissing preview window
+            require('oil.actions').preview.callback()
+            return
+          end
+
+          local w = vim.o.columns
+          local h = vim.o.lines * 2
+          local opts = {}
+          if w > h then
+            opts.vertical = true
+          else
+            opts.horizontal = true
+          end
+          require('oil').open_preview(opts)
+        end,
+      },
     },
+
     win_options = {
-      wrap = true,
-      signcolumn = 'yes',
+      wrap = false,
+      signcolumn = 'no',
       cursorcolumn = false,
       foldcolumn = '0',
       spell = false,
       list = false,
+      cursorline = false,
       conceallevel = 3,
       concealcursor = 'nivc',
     },
