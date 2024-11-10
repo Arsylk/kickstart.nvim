@@ -78,11 +78,13 @@ map('n', 'N', 'Nzz', { noremap = true })
 
 -- Overseer toggle window
 map('n', '<F12>', '<Cmd>OverseerToggle<CR>', { desc = 'Toggle Overseer window' })
-map('n', '<S-F12>', '<Cmd>OverseerRun<CR>', { noremap = true, desc = 'Overseer Run' })
+map('n', '<C-F12>', '<Cmd>OverseerRun<CR>', { noremap = true, desc = 'Overseer Run' })
+map('n', '<F36>', '<Cmd>OverseerRun<CR>', { noremap = true, desc = 'Overseer Run' })
 
 -- Redirect command output and allow edit
 map('c', '<S-CR>', function()
-  require('noice').redirect(vim.fn.getcmdline())
+  local route = require('noice.config').options.redirect
+  require('noice').redirect(vim.fn.getcmdline(), { route })
 end, { desc = 'Redirect Cmdline' })
 
 -- remap keys for "fold all" and "unfold all"
