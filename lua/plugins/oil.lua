@@ -28,6 +28,7 @@ return {
     },
 
     keymaps = {
+      ['<C-t>'] = false,
       ['gd'] = {
         desc = 'Toggle file details on list',
         callback = function()
@@ -64,10 +65,14 @@ return {
 
     win_options = {
       wrap = false,
+      number = false,
+      relativenumber = false,
       signcolumn = 'no',
       cursorcolumn = false,
       foldcolumn = '0',
       spell = false,
+      foldtext = '',
+      foldmethod = 'manual',
       list = false,
       cursorline = false,
       conceallevel = 3,
@@ -77,6 +82,7 @@ return {
     view_options = {
       show_hidden = true,
       is_always_hidden = function(name, _)
+        require 'oil'
         return name:match '.git'
       end,
     },

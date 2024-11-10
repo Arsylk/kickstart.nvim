@@ -15,6 +15,7 @@ function _M.get_oil_nnn(winnr)
   return false
 end
 
+
 --- @param val boolean
 --- @param winnr integer | nil
 function _M.set_oil_nnn(val, winnr)

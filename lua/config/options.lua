@@ -34,5 +34,6 @@ end
 vim.filetype.add {
   filename = {
     ['kitty.conf'] = 'kitty',
+    ['yabairc'] = 'bash',
   },
 }
