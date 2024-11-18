@@ -19,6 +19,17 @@ end, { noremap = true, desc = 'Command paste' })
 map('n', '<C-v>', '"+p', { desc = 'Command paste' })
 map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste' })
 
+-- Edit path under cursor
+map('n', 'ge', function()
+  local path = vim.fn.expand '<cfile>'
+  if vim.fn.filereadable(path) == 1 then
+    local cmd = ('edit %s'):format(path)
+    vim.cmd(cmd)
+  else
+    vim.notify(('Invalid path: %s'):format(path), vim.log.levels.WARN)
+  end
+end, { desc = 'Edit file under cursor' })
+
 -- Open ripgrep replace Ctrl+R
 map('n', '<C-rp>', function()
   require('rip-substitute').sub()
@@ -77,9 +88,10 @@ map('n', 'n', 'nzz', { noremap = true })
 map('n', 'N', 'Nzz', { noremap = true })
 
 -- Overseer toggle window
-map('n', '<F12>', '<Cmd>OverseerToggle<CR>', { desc = 'Toggle Overseer window' })
+map('n', '<F12>', '<Cmd>OverseerToggle<CR>', { noremap = true, desc = 'Toggle Overseer window' })
 map('n', '<C-F12>', '<Cmd>OverseerRun<CR>', { noremap = true, desc = 'Overseer Run' })
 map('n', '<F36>', '<Cmd>OverseerRun<CR>', { noremap = true, desc = 'Overseer Run' })
+map('n', '<S-F12>', '<Cmd>OverseerRunCmd<CR>', { noremap = true, desc = 'Overseer Run Cmd' })
 
 -- Redirect command output and allow edit
 map('c', '<S-CR>', function()
@@ -110,8 +122,6 @@ map('n', '<leader>fn', '<Cmd>FzfLua files cwd=$HOME/.config/nvim<CR>', { desc = 
 map('n', '<leader>fy', function()
   require 'neoclip.fzf'()
 end, { desc = '[F]ind [Y]ank History' })
-
-map('n', '<F12>', '<Cmd>OverseerRun<CR>', { desc = 'Run Overseer task' })
 
 -- LSP buffer specific mappings
 vim.api.nvim_create_autocmd('LspAttach', {
