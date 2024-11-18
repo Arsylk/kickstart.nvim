@@ -65,9 +65,9 @@ return {
 
     win_options = {
       wrap = false,
-      number = false,
+      number = true,
       relativenumber = false,
-      signcolumn = 'no',
+      signcolumn = 'yes',
       cursorcolumn = false,
       foldcolumn = '0',
       spell = false,

@@ -10,6 +10,7 @@ return {
       --  - va)  - [V]isually select [A]round [)]paren
       --  - yinq - [Y]ank [I]nside [N]ext [']quote
       --  - ci'  - [C]hange [I]nside [']quote
+      local gen_ai_spec = require('mini.extra').gen_ai_spec
       local ai = require 'mini.ai'
       ai.setup {
         n_lines = 500,
@@ -26,8 +27,11 @@ return {
             { '%u[%l%d]+%f[^%l%d]', '%f[%S][%l%d]+%f[^%l%d]', '%f[%P][%l%d]+%f[^%l%d]', '^[%l%d]+%f[^%l%d]' },
             '^().*()$',
           },
-          i = require('mini').ai_indent,
-          g = require('mini').ai_buffer,
+          D = gen_ai_spec.diagnostic(),
+          b = gen_ai_spec.buffer(),
+          i = gen_ai_spec.indent(),
+          l = gen_ai_spec.line(),
+          n = gen_ai_spec.number(),
           u = ai.gen_spec.function_call(),
           U = ai.gen_spec.function_call { name_pattern = '[%w_]' },
         },
