@@ -22,11 +22,11 @@ map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste
 -- Edit path under cursor
 map('n', 'ge', function()
   local path = vim.fn.expand '<cfile>'
-  if vim.fn.filereadable(path) == 1 then
+  if vim.fn.filereadable(path) == 1 or vim.fn.isdirectory(path) then
     local cmd = ('edit %s'):format(path)
     vim.cmd(cmd)
   else
-    vim.notify(('Invalid path: %s'):format(path), vim.log.levels.WARN)
+    vim.notify(('Missing file:\n%s'):format(path), vim.log.levels.WARN)
   end
 end, { desc = 'Edit file under cursor' })
 
