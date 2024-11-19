@@ -36,6 +36,7 @@ return {
       },
     },
     opts = {
+      auto_preview = false,
       use_diagnostic_signs = true,
       signs = {
         error = '',

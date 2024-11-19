@@ -1,0 +1,15 @@
+diff --git a$HOME/.local/share/nvim/lazy/nvim-neoclip.lua/lua/neoclip/fzf.lua b$HOME/.local/share/nvim/lazy/nvim-neoclip.lua/lua/neoclip/fzf.lua
+index 80781df..796a258 100644
+--- a$HOME/.local/share/nvim/lazy/nvim-neoclip.lua/lua/neoclip/fzf.lua
++++ b$HOME/.local/share/nvim/lazy/nvim-neoclip.lua/lua/neoclip/fzf.lua
+@@ -128,8 +128,8 @@ local function neoclip(register_names)
+       previewer = Previewer,
+       actions = actions,
+       fzf_opts = {
+-        ["--header"] = vim.fn.shellescape(picker_utils.make_prompt_title(register_names)),
+-        ["--delimiter"] = [[\\.]],
++        ["--header"] = picker_utils.make_prompt_title(register_names),
++        ["--delimiter"] = [[.]],
+         -- comment `--nth` if you want to enable
+         -- fuzzy matching the index number
+         ["--with-nth"] = '2..',

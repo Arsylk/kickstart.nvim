@@ -2,8 +2,8 @@ return {
   {
     'ibhagwan/fzf-lua',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
+    _nogitstatus = true,
     opts = function()
-      local actions = require 'fzf-lua.actions'
       return {
         keymap = {
           builtin = {
