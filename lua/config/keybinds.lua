@@ -29,6 +29,8 @@ map('n', '<C-Left>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 map('n', '<C-Right>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 map('n', '<C-Down>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+map('n', '<C-w>n', '<Cmd>new<CR>', { desc = 'Open new window split' })
+map('n', '<C-w>N', '<Cmd>vnew<CR>', { desc = 'Open new window split vertical' })
 
 -- Don't yank on delete char
 map('n', 'x', '"_x', {})
@@ -110,8 +112,6 @@ map('n', '<leader>fn', '<Cmd>FzfLua files cwd=$HOME/.config/nvim<CR>', { desc = 
 map('n', '<leader>fy', function()
   require 'neoclip.fzf'()
 end, { desc = '[F]ind [Y]ank History' })
-
-map('n', '<F12>', '<Cmd>OverseerRun<CR>', { desc = 'Run Overseer task' })
 
 -- LSP buffer specific mappings
 vim.api.nvim_create_autocmd('LspAttach', {
