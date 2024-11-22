@@ -207,12 +207,13 @@ require 'config.keybinds'
 require 'config.autocmds'
 require('lazy').setup('plugins', opts)
 
-local lazygit = require 'lazy.manage.task.git'
-lazygit.status = {
-  skip = function(plugin)
-    return plugin._nogitstatus or lazygit.status.skip(plugin)
-  end,
-  --- @async
-  run = lazygit.status.run,
-}
+-- local lazygit = require 'lazy.manage.task.git'
+-- lazygit.status = {
+--   skip = function(plugin)
+--     return plugin._nogitstatus or lazygit.status.skip(plugin)
+--   end,
+--   --- @async
+--   run = lazygit.status.run,
+-- }
+-- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=3 sts=2 sw=2 et

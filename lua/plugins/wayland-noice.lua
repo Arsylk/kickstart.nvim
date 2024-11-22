@@ -110,6 +110,9 @@ return {
             width = 60,
             height = 'auto',
           },
+          win_options = {
+            wrap = true,
+          },
         },
         popupmenu = {
           relative = 'editor',

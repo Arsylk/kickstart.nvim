@@ -189,16 +189,40 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
     -- Toggles
     map('n', '<leader>tb', gitsigns.toggle_current_line_blame, '[T]oggle show [b]lame line')
     map('n', '<leader>tD', gitsigns.toggle_deleted, '[T]oggle show [D]eleted')
+
+    Snacks.toggle
+      .new({
+        name = 'Git blame line',
+        get = function()
+          return require('gitsigns.config').lame_line
+        end,
+        set = function(state)
+          require('gitsigns.config').lame_line = state
+        end,
+      })
+      :map '<leader>tb'
   end,
 })
 
--- Autopair toggle
-map('n', '<leader>ta', function()
-  require('nvim-autopairs').toggle()
-end, { desc = '[T]oggle auto pairs' })
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'VeryLazy',
+  callback = function()
+    -- Autopair toggle
+    Snacks.toggle
+      .new({
+        name = 'Autopair',
+        get = function()
+          return not require('nvim-autopairs').state.disabled
+        end,
+        set = function(state)
+          require('nvim-autopairs').state.disabled = not state
+        end,
+      })
+      :map '<leader>ta'
+  end,
+})
 
--- Toggle debugger ui
-
+-- toogle debugger gui
 vim.keymap.set('n', '<F7>', function()
   require('dapui').toggle()
 end, { desc = 'Debug: See last session result.' })

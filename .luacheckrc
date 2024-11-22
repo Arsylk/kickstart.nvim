@@ -3,6 +3,7 @@ std = 'max'
 globals = {
   'vim',
   'assert',
+  'Snacks',
 }
 
 -- Don't report unused self arguments of methods.

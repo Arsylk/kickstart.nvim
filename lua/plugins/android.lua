@@ -1,6 +1,6 @@
 return {
   {
-    'android.nvim',
+    'Arsylk/android.nvim',
     dependencies = {
       'MunifTanjim/nui.nvim',
     },
