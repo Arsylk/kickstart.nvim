@@ -43,6 +43,7 @@ return {
         sh = { 'fmtsh' },
         fish = { 'fish_indent' },
         bash = { 'fmtsh' },
+        html = { 'prettier' },
         python = { 'ruff_format' },
         caddyfile = { 'caddyfile' },
       },

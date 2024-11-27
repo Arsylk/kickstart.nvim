@@ -6,10 +6,11 @@ return {
     },
     opts = {
       commands = {
-        avdmanager = vim.fn.expand '~/Library/Android/sdk/cmdline-tools/latest/bin/avdmanager',
+        avdmanager = '/opt/android-sdk/cmdline-tools/latest/bin/avdmanager',
         emulator = {
-          cmd = 'emulator-init',
+          cmd = '/opt/android-sdk/emulator/emulator',
           args = {
+            '-avd',
             '{}',
           },
         },

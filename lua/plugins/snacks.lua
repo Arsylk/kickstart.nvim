@@ -15,8 +15,8 @@ return {
         which_key = true,
         notify = true,
         icon = {
-          enabled = '󰨚',
-          disabled = '󰨙',
+          enabled = ' ',
+          disabled = ' ',
         },
       },
     },
@@ -34,12 +34,12 @@ return {
 
           -- create basic toggle mappings
           Snacks.toggle.option('background', { name = 'Dark Background', on = 'dark', off = 'light' }):map '<leader>tb'
-          Snacks.toggle.option('wrap', { name = 'Wrapr' }):map '<leader>tw'
+          Snacks.toggle.option('wrap', { name = 'Wrap' }):map '<leader>tw'
           Snacks.toggle.option('relativenumber', { name = 'Relative Number' }):map '<leader>trn'
           Snacks.toggle.diagnostics():map '<leader>td'
           Snacks.toggle.line_number():map '<leader>tln'
           Snacks.toggle.treesitter():map '<leader>tt'
-          Snacks.toggle.inlay_hints():map '<leader>tih'
+          Snacks.toggle.inlay_hints():map '<leader>th'
         end,
       })
     end,
