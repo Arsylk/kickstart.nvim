@@ -11,6 +11,7 @@ return {
         { '^%s*do$', 'end' }, -- do ... end blocks
         { '^%s*if', 'end' }, -- if ... end
         { '^%s*for', 'end' }, -- for
+        { '^%s*while', 'end' }, -- while
         { 'function%s*%(', 'end' }, -- 'function( or 'function (''
         { '{', '}' },
         { '%(', ')' }, -- % to escape lua pattern char
@@ -24,6 +25,7 @@ return {
           { '^%s*do$', 'end' }, -- do ... end blocks
           { '^%s*if', 'end' }, -- if ... end
           { '^%s*for', 'end' }, -- for
+          { '^%s*while', 'end' }, -- while
           { 'function%s*%(', 'end' }, -- 'function( or 'function (''
           { '{', '}' },
           { '%(', ')' }, -- % to escape lua pattern char

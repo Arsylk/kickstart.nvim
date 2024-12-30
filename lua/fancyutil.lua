@@ -15,7 +15,6 @@ function _M.get_oil_nnn(winnr)
   return false
 end
 
-
 --- @param val boolean
 --- @param winnr integer | nil
 function _M.set_oil_nnn(val, winnr)
@@ -23,6 +22,7 @@ function _M.set_oil_nnn(val, winnr)
   vim.api.nvim_win_set_var(winnr, 'nnn', val)
 end
 
+--- @return { mauve: string, sapphire: string, base: string, surface0: string, blue: string, subtext1: string, lavender: string, teal: string, maroon: string, crust: string, red: string, sky: string, pink: string, peach: string, flamingo: string, text: string, surface2: string, mantle: string, rosewater: string, overlay1: string, subtext0: string, green: string, overlay0: string, surface1: string, yellow: string, overlay2 }
 function _M.palette()
   return require('catppuccin.palettes').get_palette 'mocha'
 end

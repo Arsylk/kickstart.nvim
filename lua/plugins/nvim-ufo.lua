@@ -10,20 +10,7 @@ return {
       'kevinhwang91/promise-async',
       'nvim-treesitter/nvim-treesitter',
       'neovim/nvim-lspconfig',
-      {
-        'luukvbaal/statuscol.nvim',
-        config = function()
-          local builtin = require 'statuscol.builtin'
-          require('statuscol').setup {
-            relculright = true,
-            segments = {
-              { text = { builtin.foldfunc }, click = 'v:lua.ScFa' },
-              { text = { '%s' }, click = 'v:lua.ScSa' },
-              { text = { builtin.lnumfunc, ' ' }, click = 'v:lua.ScLa' },
-            },
-          }
-        end,
-      },
+      'luukvbaal/statuscol.nvim',
     },
     config = function()
       -- setup folding source: first treesitter, then indent as fallback

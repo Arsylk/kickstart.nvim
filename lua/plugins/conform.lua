@@ -11,16 +11,18 @@ return {
           local notify = require 'notify'
           local fmt = conform.list_formatters_for_buffer(0)[1]
 
-          if vim.api.nvim_buf_get_var(0, 'autoformat') == false then
-            notify.notify("Skipping 'noautoformat' file ...", vim.log.levels.DEBUG, { replace = record })
+          local msg = string.format('Running %s on %s', fmt, vim.api.nvim_buf_get_name(0))
+          local record = notify.notify(msg, vim.log.levels.INFO, {})
+
+          local success, noformat = pcall(vim.api.nvim_buf_get_var, 0, 'noformat')
+          if success and noformat then
+            notify.notify("Skipping 'noformat' file ...", vim.log.levels.DEBUG, { replace = record })
             return
           end
 
-          local msg = ('Running %s on %s'):format(fmt, vim.api.nvim_buf_get_name(0))
-          local record = notify.notify(msg, vim.log.levels.INFO, {})
           conform.format({ async = true, lsp_fallback = true }, function(err, did_edit)
             if err then
-              notify.notify(('Error from %s'):format(fmt), vim.log.levels.ERROR, { replace = record })
+              notify.notify(string.format('Error from %s', fmt), vim.log.levels.ERROR, { replace = record })
             elseif did_edit then
               notify.notify('File formatted successfully', vim.log.levels.INFO, { replace = record })
             else
@@ -54,6 +56,11 @@ return {
         },
       },
       format_on_save = function(bufnr)
+        local success, noformat = pcall(vim.api.nvim_buf_get_var, bufnr, 'noformat')
+        if success and noformat then
+          return nil
+        end
+
         local disable_filetypes = {
           --[[  c = true, cpp = true  ]]
         }

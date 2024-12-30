@@ -1,5 +1,7 @@
-local CLOCKWORK_PATH = '~/Projects/Typescript/frida-clockwork/'
+local CLOCKWORK_PATH = '/opt/github/frida-clockwork/'
 vim.g.lastpackage = nil
+vim.g.lastdevice = nil
+vim.g.lastscript = nil
 
 --- @param device_id string?
 --- @param cmd string?
@@ -28,7 +30,45 @@ local pick_device = function(cb, opts)
   end
 
   local cmd = [[adb devices | sed '$ d']]
-  fzf.fzf_exec(cmd, {
+  local contents = function(fzf_cb)
+    coroutine.wrap(function()
+      local co = coroutine.running()
+
+      vim.schedule(function()
+        local processline = function(line)
+          local tline = vim.trim(line)
+          local item = tline:match '(%S+)'
+          return tline, item
+        end
+
+        local output = vim.fn.system(cmd)
+        local lines = vim.split(output, '\n', { plain = true })
+        table.remove(lines)
+        local header = table.remove(lines, 1)
+
+        local items = {}
+        for _, line in pairs(lines) do
+          local item, device_id = processline(line)
+          if device_id == vim.g.lastdevice then
+            table.insert(items, 1, item)
+          else
+            table.insert(items, item)
+          end
+        end
+        table.insert(items, 0, header)
+
+        for _, item in pairs(items) do
+          fzf_cb(item, function()
+            coroutine.resume(co)
+          end)
+        end
+      end)
+
+      coroutine.yield(co)
+      fzf_cb()
+    end)()
+  end
+  fzf.fzf_exec(contents, {
     winopts = {
       height = 0.65,
       width = 0.50,
@@ -36,11 +76,18 @@ local pick_device = function(cb, opts)
     fzf_opts = {
       ['--prompt'] = 'Device> ',
       ['--header-lines'] = '1',
+      ['-i'] = true,
+      ['-e'] = true,
+      ['--cycle'] = true,
+      ['--track'] = true,
     },
     actions = {
       ['default'] = function(selected)
         if selected and #selected > 0 then
           local item = selected[1]:match '(%S+)'
+          if item ~= nil then
+            vim.g.lastdevice = item
+          end
           cb(item)
         end
       end,
@@ -117,7 +164,7 @@ local pick_package = function(device_id, cb)
       ['--track'] = true,
       ['--tiebreak'] = 'index',
     },
-    preview = [[ adb shell pm dump {1} | grep -A20 '^Packages:' ]],
+    preview = adb(device_id, [[ shell pm dump {1} | grep -A20 '^Packages:' ]]),
     actions = {
       ['default'] = function(selected)
         if selected and #selected > 0 then
@@ -130,6 +177,44 @@ local pick_package = function(device_id, cb)
       end,
     },
   })
+end
+
+--- @param cb fun(script_file)
+local pick_script = function(cb)
+  local fzf = require 'fzf-lua.providers.files'
+  local actions = require 'fzf-lua.actions'
+  local path = require 'fzf-lua.path'
+
+  fzf.files {
+    fd_opts = [[.*.js$]],
+    toggle_ignore_flag = '--no-ignore',
+    winopts = {
+      height = 0.65,
+      width = 0.50,
+    },
+    fzf_opts = {
+      ['--prompt'] = 'Files> ',
+      ['-i'] = true,
+      ['-e'] = true,
+      ['--cycle'] = true,
+      ['--track'] = true,
+    },
+    actions = {
+      ['ctrl-g'] = false,
+      ['ctrl-q'] = actions.toggle_ignore,
+      ['default'] = function(selected, opts)
+        if selected and #selected > 0 then
+          local file = path.entry_to_file(selected[1], opts)
+          if file ~= nil then
+            vim.g.lastscript = file.path
+          end
+          cb(file)
+        end
+      end,
+    },
+    fzf = false,
+    basic = false,
+  }
 end
 
 --- @param callback fun(device_id: string|nil, package_id: string)
@@ -170,25 +255,72 @@ end
 
 --- @param device_id string|nil
 --- @param package_id string
+--- @param script string|nil
 --- @return string
-local format_command = function(device_id, package_id)
+local frida_command = function(device_id, package_id, script)
   local cmd = 'frida'
   if device_id then
     cmd = cmd .. ' -D ' .. device_id
   end
   cmd = cmd .. ' -f ' .. package_id
   cmd = cmd .. ' -o session.txt'
-  cmd = cmd .. ' -l script.js'
+  cmd = cmd .. ' -l ' .. (script or 'script.js')
+  return cmd
+end
+
+--- @param device_id string|nil
+--- @param package_id string
+--- @return string
+local clear_command = function(device_id, package_id)
+  local cmd = 'adb'
+  if device_id then
+    cmd = cmd .. ' -s ' .. device_id
+  end
+  cmd = cmd .. ' shell pm clear '
+  cmd = cmd .. package_id
   return cmd
 end
 
 vim.api.nvim_create_user_command('FridaSpawn', function()
   pick(function(device_id, package_id)
-    local cmd = format_command(device_id, package_id)
+    local cmd = frida_command(device_id, package_id, vim.g.lastscript)
     local tty = term()
     tty:shutdown()
     tty:open(40, 'horizontal')
     tty:send(cmd)
+  end)
+end, { nargs = 0 })
+
+vim.api.nvim_create_user_command('FridaConfig', function()
+  coroutine.wrap(function()
+    local co = coroutine.running()
+    pick_device(function(device_id)
+      coroutine.resume(co, device_id)
+    end, { skip = false })
+    local device_id = coroutine.yield(co)
+
+    pick_package(device_id, function(package_id)
+      coroutine.resume(co, package_id)
+    end)
+    local package_id = coroutine.yield(co)
+
+    pick_script(function(script_file)
+      coroutine.resume(co, script_file)
+    end)
+    local script_file = coroutine.yield(co)
+  end)()
+end, { nargs = 0 })
+
+vim.api.nvim_create_user_command('AndroidClearData', function()
+  pick(function(device_id, package_id)
+    local cmd = clear_command(device_id, package_id)
+    local output = vim.fn.system(cmd)
+    local success = vim.v.shell_error == 0
+    if success then
+      vim.notify(output, vim.log.levels.INFO)
+    else
+      vim.notify(output, vim.log.levels.ERROR)
+    end
   end)
 end, { nargs = 0 })
 
@@ -201,136 +333,10 @@ vim.api.nvim_create_autocmd('User', {
       return
     end
 
-    overseer.new_task {
-      name = 'build: watch',
-      cwd = CLOCKWORK_PATH,
-      strategy = {
-        'orchestrator',
-        tasks = {
-          {
-            {
-              'shell',
-              name = 'tsc: watch',
-              cmd = 'npx tsc -b -w',
-              cwd = CLOCKWORK_PATH,
-              components = {
-                {
-                  'on_output_parse',
-                  parser = {
-                    diagnostics = {
-                      {
-                        'always',
-                        {
-                          'loop',
-                          {
-                            'parallel',
-                            {
-                              'invert',
-                              { 'test', 'Watching for file changes%.$' },
-                            },
-                            {
-                              'always',
-                              {
-                                'extract',
-                                { regex = true },
-                                '\\v^([^[:space:]].*)[\\(:](\\d+)[,:](\\d+)(\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$',
-                                'filename',
-                                'lnum',
-                                'col',
-                                '_',
-                                'type',
-                                'code',
-                                'text',
-                              },
-                            },
-                            { 'skip_lines', 1 },
-                          },
-                        },
-                      },
-                      { 'dispatch', 'set_results' },
-                      {
-                        'skip_until',
-                        { skip_matching_line = true },
-                        'File change detected%. Starting incremental compilation%.%.%.$',
-                      },
-                      { 'dispatch', 'clear_results' },
-                    },
-                  },
-                },
-              },
-            },
-            {
-              'shell',
-              name = 'webpack: watch',
-              cmd = 'npx webpack --config webpack.config.js --watch --stats-error-details',
-              cwd = CLOCKWORK_PATH,
-              components = {
-                {
-                  'on_output_parse',
-                  parser = {
-                    diagnostics = {
-                      'loop',
-                      {
-                        'sequence',
-                        { 'extract', { regex = true, append = false }, '\\v^(\\S+):', 'target' },
-                        {
-                          'always',
-                          {
-                            'loop',
-                            {
-                              'sequence',
-                              { 'skip_until', { skip_matching_line = true }, '^%s*$' },
-                              {
-                                'extract',
-                                { regex = true, append = false },
-                                '\\v^\\s+(ERROR|WARN) in (.+)',
-                                'type',
-                                'file',
-                              },
-                              {
-                                'skip_lines',
-                                1,
-                              },
-                              {
-                                'extract',
-                                { regex = true, append = false },
-                                '\\v^\\s+\\[(.*)\\] (ERROR|WARN) in (.*)\\((\\d+),(\\d+)\\)',
-                                'tag',
-                                'type',
-                                'file',
-                                'lnum',
-                                'col',
-                              },
-                              {
-                                'extract',
-                                { regex = true },
-                                '\\v^\\s+([^:]+): (.+)$',
-                                'code',
-                                'message',
-                              },
-                            },
-                          },
-                        },
-                        { 'skip_until', { regex = true }, '\\v^.*\\(webpack [0-9.]*\\).*compiled' },
-                        { 'dispatch', 'set_results' },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      components = {
-        { 'unique', replace = true, restart_interrupts = true },
-      },
-    }
-
     overseer.register_template {
       name = 'frida server',
       params = function()
-        local items = {}
+        local items = { fzf_exec }
         local output = vim.fn.system [[adb devices | sed '1d;$d;s/\\t.*//']]
         if vim.v.shell_error == 0 then
           items = vim.split(output, '\n', { plain = true, trimempty = true })
@@ -339,7 +345,7 @@ vim.api.nvim_create_autocmd('User', {
           device = {
             desc = 'Adb device',
             type = 'enum',
-            default = items[1],
+            default = vim.g.lastdevice or items[1],
             choices = items,
           },
           file = {
@@ -350,7 +356,7 @@ vim.api.nvim_create_autocmd('User', {
           cmd = {
             desc = 'Command ran in adb shell',
             type = 'string',
-            default = 'su 0',
+            default = 'su -c',
             optional = true,
           },
         }

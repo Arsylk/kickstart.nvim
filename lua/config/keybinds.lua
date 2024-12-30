@@ -1,10 +1,11 @@
 local map = vim.keymap.set
 
 -- The good 'ol keybinds
-map('n', '<C-a>', 'ggVG$', { noremap = true, silent = true })
+map('n', '<C-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
+map('n', '<C-a>', 'gg^vG$', { desc = 'Select all', noremap = true, silent = true })
+map('n', '<D-a>', 'gg^vG$', { desc = 'which-key.ignore', noremap = true, silent = true })
 map({ 'i', 'n' }, '<C-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
 map({ 'i', 'n' }, '<D-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
-map('n', '<C-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
 
 -- Activate Ctrl+V as paste
 map('c', '<C-v>', function()
@@ -19,6 +20,8 @@ end, { noremap = true, desc = 'Command paste' })
 map('n', '<C-v>', '"+p', { desc = 'Command paste' })
 map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste' })
 
+map('n', '<S-Esc><S-Esc><Del>', '<Cmd>qa!<CR>', { nowait = true, noremap = true, desc = 'Instnat Quit' })
+
 -- Edit path under cursor
 map('n', 'ge', function()
   local path = vim.fn.expand '<cfile>'
@@ -30,16 +33,21 @@ map('n', 'ge', function()
   end
 end, { desc = 'Edit file under cursor' })
 
+-- Kill current buffer
+map('n', '<C-w>Q', function()
+  vim.api.nvim_buf_delete(0, { force = true })
+end, { desc = 'Kill current buffer' })
+
 -- Open ripgrep replace Ctrl+R
 map('n', '<C-rp>', function()
   require('rip-substitute').sub()
 end, { desc = ' rip substitute' })
 
 -- Move between windows with arrows
-map('n', '<C-Left>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-map('n', '<C-Right>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-map('n', '<C-Down>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- map('n', '<C-Left>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+-- map('n', '<C-Right>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+-- map('n', '<C-Down>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+-- map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 map('n', '<C-w>n', '<Cmd>new<CR>', { desc = 'Open new window split' })
 map('n', '<C-w>N', '<Cmd>vnew<CR>', { desc = 'Open new window split vertical' })
 
@@ -73,6 +81,33 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.keymap.set('', 'qq', '<Esc>', { noremap = true, buffer = params.buf, desc = 'Close window' })
   end,
 })
+
+-- Toggle term specific mappings
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'toggleterm' },
+  callback = function(params)
+    for i, key in pairs { '<leader><C-c>', '<leader><D-c>' } do
+      map('n', key, function()
+        local terminal = require 'toggleterm.terminal'
+        local id = terminal.get_focused_id()
+        if id then
+          local term = terminal.get(id, true)
+          if term then
+            term:shutdown()
+          end
+        end
+      end, { desc = i == 1 and 'Shutdown terminal' or 'which-key.ignore', buffer = params.buf })
+    end
+  end,
+})
+
+-- Break inserted text into smaller undo units
+local undo_ch = { ',', '.', '!', '?', ';', ':' }
+for _, ch in ipairs(undo_ch) do
+  map('i', ch, ch .. '<c-g>u')
+end
+
+map('x', '$', 'g_')
 
 -- Open autocomplete from normal mode
 map('n', '<C-Space>', function()
@@ -176,7 +211,7 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
       end
     end, 'Jump to previous [C]hange')
 
-    -- normal mode
+    -- normal mo
     map('n', '<leader>hs', gitsigns.stage_hunk, '[s]tage hunk')
     map('n', '<leader>hr', gitsigns.reset_hunk, '[r]eset hunk')
     map('n', '<leader>hS', gitsigns.stage_buffer, '[S]tage buffer')
@@ -221,6 +256,22 @@ vim.api.nvim_create_autocmd('User', {
         end,
       })
       :map '<leader>ta'
+    -- Autosave toggle
+    Snacks.toggle
+      .new({
+        name = 'Autosave',
+        get = function()
+          return vim.g.autosave
+        end,
+        set = function(state)
+          if state then
+            require('auto-save').on()
+          else
+            require('auto-save').off()
+          end
+        end,
+      })
+      :map '<leader>ta'
   end,
 })
 
@@ -228,3 +279,45 @@ vim.api.nvim_create_autocmd('User', {
 vim.keymap.set('n', '<F7>', function()
   require('dapui').toggle()
 end, { desc = 'Debug: See last session result.' })
+
+if vim.g.neovide then
+  map('n', '<D-s>', ':w<CR>', { desc = 'which-key.ignore' }) -- Save
+  map('v', '<D-c>', '"+y', { desc = 'which-key.ignore' }) -- Copy
+  map('n', '<D-v>', '"+P', { desc = 'which-key.ignore' }) -- Paste normal mode
+  map('v', '<D-v>', '"+P', { desc = 'which-key.ignore' }) -- Paste visual mode
+  map('c', '<D-v>', '<C-R>+', { desc = 'which-key.ignore' }) -- Paste command mode
+  map('i', '<D-v>', '<ESC>l"+Pli', { desc = 'which-key.ignore' }) -- Paste insert mode
+
+  vim.g.neovide_window_blurred = true
+  vim.g.neovide_scale_factor = 1.0
+  local change_scale_factor = function(delta)
+    vim.g.neovide_scale_factor = vim.g.neovide_scale_factor * delta
+  end
+  map('n', '<C-+>', function()
+    change_scale_factor(1.1)
+  end, { desc = 'Increase font size' })
+  map('n', '<C-_>', function()
+    change_scale_factor(1 / 1.1)
+  end, { desc = 'Decrease font size' })
+  map('n', '<C-)>', function()
+    vim.g.neovide_scale_factor = 1.0
+  end, { desc = 'Reset font size' })
+  local alpha = function()
+    return string.format('%x', math.floor(255 * (vim.g.neovide_transparency_point or 0.8)))
+  end
+  -- Set transparency and background color (title bar color)
+  vim.g.neovide_transparency = 0.0
+  vim.g.neovide_transparency_point = 0.8
+  vim.g.neovide_background_color = '#0f1117' .. alpha()
+  -- Add keybinds to change transparency
+  local change_transparency = function(delta)
+    vim.g.neovide_transparency_point = vim.g.neovide_transparency_point + delta
+    vim.g.neovide_background_color = '#0f1117' .. alpha()
+  end
+  map({ 'n', 'v', 'o' }, '<D-]>', function()
+    change_transparency(0.01)
+  end)
+  map({ 'n', 'v', 'o' }, '<D-[>', function()
+    change_transparency(-0.01)
+  end)
+end

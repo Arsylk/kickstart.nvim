@@ -12,6 +12,7 @@ return {
             ['<F2>'] = 'toggle-preview',
           },
           fzf = {
+            false,
             ['ctrl-q'] = 'select-all+accept',
             ['ctrl-a'] = 'toggle-all',
           },

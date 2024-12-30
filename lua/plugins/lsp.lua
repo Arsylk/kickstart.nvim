@@ -92,7 +92,27 @@ return {
             },
           },
         },
-        j,
+        kotlin_language_server = {
+          settings = {
+            kotlin_language_server = (function()
+              local root_files = {
+                'settings.gradle',
+                'settings.gradle.kts',
+                'build.xml',
+                'pom.xml',
+                'build.gradle',
+                'build.gradle.kts',
+              }
+              local util = require 'lspconfig.util'
+              return {
+                version = '1.3.12',
+                filetypes = { 'kotlin', 'kts' },
+                cmd = { 'kotlin-language-server' },
+                root_dir = util.root_pattern(unpack(root_files)),
+              }
+            end)(),
+          },
+        },
       }
 
       require('lspconfig.ui.windows').default_options.border = 'rounded'

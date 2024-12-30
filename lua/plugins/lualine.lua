@@ -50,6 +50,7 @@ return {
       { 'nvim-tree/nvim-web-devicons' },
       { 'folke/noice.nvim' },
       { 'arkav/lualine-lsp-progress' },
+      { 'catppuccin/nvim' },
     },
     config = function()
       require('lualine').setup {

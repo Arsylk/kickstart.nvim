@@ -29,6 +29,7 @@ end
 
 return {
   {
+    enabled = false,
     'rcarriga/nvim-notify',
     cmd = { 'VeryLazy' },
     init = function()

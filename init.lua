@@ -52,7 +52,9 @@ vim.opt.showmode = false
 vim.opt.clipboard = 'unnamedplus'
 
 -- Enable break indent
+vim.opt.showbreak = '󰘍 '
 vim.opt.breakindent = true
+vim.opt.breakindentopt = { 'shift:1' }
 
 -- Save undo history
 vim.opt.undofile = true
@@ -141,6 +143,10 @@ if not vim.loop.fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
+if vim.g.neovide then
+  vim.o.guifont = 'Menlo'
+end
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -181,6 +187,7 @@ local opts = {
         'matchit',
         'matchparen',
         'netrw',
+        'netrwHelp',
         'netrwPlugin',
         'netrwSettings',
         'netrwFileHandlers',
