@@ -4,7 +4,6 @@ return {
     priority = 1000,
     lazy = false,
     opts = function()
-      --- @type snacks.Config
       return {
         bigfile = { enabled = true },
         notifier = {
@@ -16,7 +15,6 @@ return {
           date_format = '%I:%M %p',
         },
         quickfile = { enabled = true },
-        scroll = { enabled = false },
         statuscolumn = {
           enabled = true,
           left = { 'git', 'fold' },
@@ -69,7 +67,7 @@ return {
           Snacks.toggle.diagnostics():map '<leader>td'
           Snacks.toggle.line_number():map '<leader>tln'
           Snacks.toggle.treesitter():map '<leader>tt'
-          Snacks.toggle.inlay_hints():map '<leader>tih'
+          Snacks.toggle.inlay_hints():map '<leader>th'
         end,
       })
 
