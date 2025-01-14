@@ -27,3 +27,12 @@ vim.api.nvim_create_autocmd('FileType', {
     end)
   end,
 })
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'snacks_notif', 'snacks_notif_history' },
+  callback = function()
+    -- vim.api.nvim_set_hl(0, '@spell.markdown', { link = '@text' })
+    vim.api.nvim_set_hl(0, '@markup.strong.markdown_inline', { link = '@spell.markup', bold = true })
+    vim.api.nvim_set_hl(0, '@markup.heading.1.markdown', { link = '@markup.heading' })
+  end,
+})

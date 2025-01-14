@@ -52,7 +52,7 @@ return {
     dependencies = {
       { 'L3MON4D3/LuaSnip', build = 'make install_jsregexp' },
       'saadparwaiz1/cmp_luasnip',
-      'windwp/nvim-autopairs',
+      { 'windwp/nvim-autopairs', optional = true },
       'onsails/lspkind.nvim',
       {
         'hrsh7th/cmp-nvim-lsp',
@@ -88,6 +88,7 @@ return {
         end
       end
 
+      --- @type cmp.ConfigSchema
       return {
         preselect = cmp.PreselectMode.Item,
         window = {
@@ -144,21 +145,27 @@ return {
           end, { 'i', 's' }),
         },
         sources = {
-          { name = 'lazydev', group_index = 0 },
-          { name = 'luasnip', max_item_count = 5, group_index = 1 },
-          { name = 'nvim_lsp', max_item_count = 20, group_index = 1 },
-          { name = 'nvim_lua', group_index = 1 },
-          { name = 'path', group_index = 2 },
-          { name = 'buffer', keyword_length = 2, max_item_count = 5, group_index = 2 },
-          { name = 'treesitter', group_index = 3 },
+          { priority = 999, name = 'lazydev', group_index = 1 },
+          { priority = 99, name = 'luasnip', max_item_count = 5, group_index = 1 },
+          { priority = 9, name = 'nvim_lsp', max_item_count = 20, group_index = 1 },
+          { name = 'nvim_lua', group_index = 2 },
+          { name = 'path', group_index = 3 },
+          { name = 'buffer', keyword_length = 3, max_item_count = 5, group_index = 2 },
+          { name = 'treesitter', group_index = 4 },
         },
         formatting = {
+          expandable_indicator = true,
           fields = { 'kind', 'abbr', 'menu' },
           --- @param ctx cmp.Entry
           format = function(ctx, item)
             local icons = kinds
+            local fallback = {
+              get = function(_, key)
+                return icons[key]
+              end,
+            }
             if icons[item.kind] then
-              item.kind = icons[item.kind] .. item.kind
+              item.kind = (MiniIcons or fallback).get('lsp', item.kind) .. ' ' .. item.kind
             end
             item.menu = ctx.source.name
             return item
@@ -180,7 +187,10 @@ return {
       local cmp = require 'cmp'
       cmp.setup(opts)
 
-      local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
+      local ok, cmp_autopairs = pcall(require, 'nvim-autopairs.completion.cmp')
+      if not ok then
+        return
+      end
       cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
       cmp.event:on('menu_opened', function(event)
         local entries = event.window:get_entries()

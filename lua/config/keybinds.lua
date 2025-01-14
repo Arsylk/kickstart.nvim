@@ -115,7 +115,10 @@ map('x', '$', 'g_')
 
 -- Open autocomplete from normal mode
 map('n', '<C-Space>', function()
-  local cmp = require 'cmp'
+  local ok, cmp = pcall(require, 'cmp')
+  if not ok then
+    return
+  end
   vim.cmd [[startinsert]]
   vim.schedule(cmp.complete)
 end, { silent = true, desc = 'Open autocomplete' })

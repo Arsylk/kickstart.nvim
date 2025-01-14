@@ -28,6 +28,7 @@ return {
     },
 
     keymaps = {
+      ['<C-s>'] = false,
       ['<C-t>'] = false,
       ['gd'] = {
         desc = 'Toggle file details on list',
@@ -95,6 +96,8 @@ return {
         if params.event == 'BufEnter' then
           -- double Q to close window
           vim.keymap.set('', 'qq', require('oil').close, { buffer = bufnr, desc = 'Close current window' })
+
+          -- disable <C-s>
 
           -- toggle detailed list mode
           vim.keymap.set('', '<leader>tnnn', function()

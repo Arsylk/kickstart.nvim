@@ -1,6 +1,7 @@
 return {
   {
     'lewis6991/gitsigns.nvim',
+    --- @type Gitsigns.Config
     opts = {
       sign_priority = 1,
       signs = {
@@ -19,6 +20,7 @@ return {
         changedelete = { text = '~' },
         untracked = { text = '?' },
       },
+      numhl = true,
     },
     config = function(_, opts)
       require('gitsigns').setup(opts)

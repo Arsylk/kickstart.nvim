@@ -4,41 +4,56 @@ return {
     lazy = false,
     name = 'catppuccin',
     priority = 1000,
-    opts = {
-      flavour = 'mocha',
-      integrations = {
-        cmp = true,
-        gitsigns = true,
-        treesitter = true,
-        notify = true,
-        noice = true,
-        neogit = true,
-        lsp_saga = true,
-        native_lsp = {
-          enabled = true,
-          hints = { 'italic' },
+    opts = function()
+      local colors = require('fancyutil').palette()
+
+      --- @type CatppuccinOptions
+      return {
+        flavour = 'mocha',
+        highlight_overrides = {
+          all = {
+            SnacksNotifierInfo = { fg = colors.mauve },
+            SnacksNotifierIconInfo = { fg = colors.mauve },
+            SnacksNotifierTitleInfo = { fg = colors.mauve, style = { 'italic' } },
+            SnacksNotifierFooterInfo = { link = 'DiagnosticInfo' },
+            SnacksNotifierBorderInfo = { fg = colors.mauve },
+          },
         },
-        rainbow_delimiters = true,
-        mini = {
-          enabled = true,
+        integrations = {
+          cmp = true,
+          gitsigns = true,
+          treesitter = true,
+          noice = true,
+          neogit = true,
+          lsp_saga = true,
+          native_lsp = {
+            enabled = true,
+            hints = { 'italic' },
+          },
+          rainbow_delimiters = true,
+          mini = {
+            enabled = true,
+          },
+          dashboard = true,
+          fzf = true,
+          fidget = true,
+          mason = true,
+          telescope = {
+            enabled = true,
+          },
+          which_key = true,
+          dap = true,
+          lsp_trouble = true,
+          overseer = true,
+          snacks = true,
+          illuminate = {
+            enabled = true,
+            lsp = true,
+          },
         },
-        dashboard = true,
-        fidget = true,
-        mason = true,
-        telescope = {
-          enabled = true,
-        },
-        which_key = true,
-        dap = true,
-        lsp_trouble = true,
-        overseer = true,
-        illuminate = {
-          enabled = true,
-          lsp = true,
-        },
-      },
-      term_colors = true,
-    },
+        term_colors = true,
+      }
+    end,
     init = function()
       vim.api.nvim_create_autocmd('OptionSet', {
         pattern = 'background',
