@@ -9,6 +9,10 @@ vim.diagnostic.config {
   update_in_insert = true,
   float = {
     focusable = false,
+    severity_sort = true,
+    source = true,
+    scope = 'line',
+    border = 'rounded',
   },
   signs = true,
   underline = true,

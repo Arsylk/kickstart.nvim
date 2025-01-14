@@ -48,6 +48,7 @@ return {
         html = { 'prettier' },
         python = { 'ruff_format' },
         caddyfile = { 'caddyfile' },
+        c = { 'clang-format' },
       },
       formatters = {
         caddyfile = {

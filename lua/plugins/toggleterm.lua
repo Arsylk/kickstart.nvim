@@ -12,17 +12,20 @@ return {
         end,
       })
 
-      vim.api.nvim_create_autocmd('FileType', {
-        pattern = { 'toggleterm' },
+      vim.api.nvim_create_autocmd('BufWinEnter', {
+        pattern = 'term://*',
         callback = function(params)
           vim.keymap.set('n', 'cd', function()
+            log 'killme:'
             local winnr = vim.fn.bufwinid(params.buf)
             local lastwin = nil
             for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
               if win ~= winnr then
                 lastwin = win
+                break
               end
             end
+            log { win = winnr, last = lastwin }
             if not lastwin then
               return
             end

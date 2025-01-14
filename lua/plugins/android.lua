@@ -6,11 +6,10 @@ return {
     },
     opts = {
       commands = {
-        avdmanager = '/opt/android-sdk/cmdline-tools/latest/bin/avdmanager',
+        avdmanager = 'avdmanager',
         emulator = {
-          cmd = '/opt/android-sdk/emulator/emulator',
+          cmd = 'emulator-init',
           args = {
-            '-avd',
             '{}',
           },
         },

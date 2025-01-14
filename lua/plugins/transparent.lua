@@ -7,6 +7,8 @@ return {
       auto = true,
       extra_groups = {
         'NormalNC',
+        'IlluminatedWordText',
+        'NormalFloat',
       },
     },
     init = function()

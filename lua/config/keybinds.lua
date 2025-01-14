@@ -20,7 +20,11 @@ end, { noremap = true, desc = 'Command paste' })
 map('n', '<C-v>', '"+p', { desc = 'Command paste' })
 map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste' })
 
-map('n', '<S-Esc><S-Esc><Del>', '<Cmd>qa!<CR>', { nowait = true, noremap = true, desc = 'Instnat Quit' })
+-- Force close all windowns
+map('n', '<S-Esc><S-Esc><Del>', '<Cmd>qa!<CR>', { nowait = true, noremap = true, desc = 'Instant Quit' })
+
+-- Display diagnostics under cursor
+map('n', '<D-d>', vim.diagnostic.open_float, { desc = 'Show diagnostics under the cursor' })
 
 -- Edit path under cursor
 map('n', 'ge', function()
@@ -147,6 +151,7 @@ end, { desc = 'Close all folds' })
 -- LSP mappings
 map('n', '<leader><leader>', '<Cmd>FzfLua buffers<CR>', { desc = '[ ] Find existing buffers' })
 map('n', '<leader>fh', '<Cmd>FzfLua help<CR>', { desc = '[F]ind [H]elp' })
+map('n', '<leader>fh', '<Cmd>FzfLua highlights<CR>', { desc = '[F]ind [H]ighlights' })
 map('n', '<leader>fk', '<Cmd>FzfLua keymaps<CR>', { desc = '[F]ind [K]eymaps' })
 map('n', '<leader>ff', '<Cmd>FzfLua files<CR>', { desc = '[F]ind [F]iles' })
 map('n', '<leader>fs', '<Cmd>FzfLua builtin<CR>', { desc = '[F]ind [S]elect FzfLua' })
@@ -256,10 +261,26 @@ vim.api.nvim_create_autocmd('User', {
         end,
       })
       :map '<leader>ta'
-    -- Autosave toggle
+    -- UndoTree toggle
     Snacks.toggle
       .new({
         name = 'Autosave',
+        get = function()
+          return vim.g.autosave
+        end,
+        set = function(state)
+          if state then
+            require('auto-save').on()
+          else
+            require('auto-save').off()
+          end
+        end,
+      })
+      :map '<leader>ta'
+    -- Autosave toggle
+    Snacks.toggle
+      .new({
+        name = 'Autoformat',
         get = function()
           return vim.g.autosave
         end,

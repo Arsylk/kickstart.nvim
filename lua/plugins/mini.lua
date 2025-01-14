@@ -4,8 +4,9 @@ return {
     config = function()
       -- Setup terminal colors
       require('mini.colors').setup()
+      -- Setup icons
+      require('mini.icons').setup()
       -- Better Around/Inside textobjects
-      --
       -- Examples:
       --  - va)  - [V]isually select [A]round [)]paren
       --  - yinq - [Y]ank [I]nside [N]ext [']quote
@@ -50,7 +51,7 @@ return {
           -- Highlight standalone (`#rrggbb`) using that color
           hex_color = require('mini.hipatterns').gen_highlighter.hex_color(),
           hex_short_color = {
-            pattern = '#%x%x%x%f[%X]',
+            pattern = '#%x%x%x%f[^a-zA-Z0-9]',
             group = function(_, _, data)
               local match = data.full_match
               local correct = '#' .. string.rep(match:sub(2, 2), 2) .. string.rep(match:sub(3, 3), 2) .. string.rep(match:sub(4, 4), 2)
@@ -59,6 +60,7 @@ return {
           },
           hex_6_color = {
             -- 43fcA0
+            -- #define
             pattern = '%f[%w]%x%x%x%x%x%x%f[%X]',
             group = function(_, _, data)
               local match = data.full_match

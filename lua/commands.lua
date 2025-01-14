@@ -199,3 +199,27 @@ vim.api.nvim_create_user_command('FzfLuaAndroidPkg', function()
     },
   })
 end, {})
+
+-- refresh syntax automatically on file save
+vim.api.nvim_create_user_command('SyntaxAutoSyncToggle', function()
+  local ok, existing_group = pcall(vim.api.nvim_get_autocmds, { group = 'SyntaxRefresh' })
+  if ok and #existing_group > 0 then
+    vim.api.nvim_del_augroup_by_name 'SyntaxRefresh'
+  end
+
+  local group = vim.api.nvim_create_augroup('SyntaxRefresh', { clear = true })
+  local refresh_syntax = function()
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(buf) then
+        vim.api.nvim_buf_call(buf, function()
+          vim.cmd 'silent! syntax sync fromstart'
+        end)
+      end
+    end
+  end
+
+  vim.api.nvim_create_autocmd('BufWritePost', {
+    group = group,
+    callback = refresh_syntax,
+  })
+end, { nargs = 0 })
