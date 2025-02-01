@@ -1,0 +1,18 @@
+diff --git a/lua/snacks/notifier.lua b/lua/snacks/notifier.lua
+index 0035e80..5fc8bb8 100644
+--- a/lua/snacks/notifier.lua
++++ b/lua/snacks/notifier.lua
+@@ -201,11 +201,12 @@ N.styles = {
+     local top = vim.api.nvim_buf_line_count(buf)
+     local empty = top == 1 and #vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1] == 0
+     top = empty and 0 or top
++    prefix_width = 0
+     lines[1] = string.rep(" ", prefix_width) .. (lines[1] or "")
+     vim.api.nvim_buf_set_lines(buf, top, -1, false, lines)
+     vim.api.nvim_buf_set_extmark(buf, ctx.ns, top, 0, {
+       virt_text = prefix,
+-      virt_text_pos = "overlay",
++      virt_text_pos = "inline",
+       priority = 10,
+     })
+   end,

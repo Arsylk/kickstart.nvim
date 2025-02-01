@@ -140,7 +140,7 @@ vim.opt.rtp:prepend(lazypath)
 
 -- general neovide related configs
 if vim.g.neovide then
-  vim.o.guifont = 'Menlo'
+  vim.o.guifont = 'JetBrains Mono NL'
 end
 
 -- [[ Configure and install plugins ]]
