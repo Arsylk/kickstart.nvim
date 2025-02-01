@@ -16,7 +16,6 @@ return {
         pattern = 'term://*',
         callback = function(params)
           vim.keymap.set('n', 'cd', function()
-            log 'killme:'
             local winnr = vim.fn.bufwinid(params.buf)
             local lastwin = nil
             for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
@@ -48,6 +47,20 @@ return {
     opts = {
       size = 24,
       open_mapping = [[<c-t>]],
+    },
+    keys = {
+      {
+        '<C-T>',
+        function()
+          local Terminal = require('toggleterm.terminal').Terminal
+          local inst = Terminal:new {
+            id = -1,
+            display_name = 'Terminal',
+          }
+          inst:toggle()
+        end,
+        desc = 'Open dedicated terminal',
+      },
     },
   },
 }
