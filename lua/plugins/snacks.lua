@@ -33,20 +33,15 @@ return {
           },
           width = { min = 10, max = 0.4 },
         },
+        input = {
+          enabled = true,
+        },
+        picker = {
+          enabled = true,
+        },
         bigfile = { enabled = true },
         quickfile = { enabled = true },
-        statuscolumn = {
-          enabled = false,
-          left = { 'git', 'fold' },
-          right = {},
-          folds = {
-            open = true,
-            git_hl = true,
-          },
-          git = {
-            patterns = { 'GitSigns' },
-          },
-        },
+        statuscolumn = { enabled = false },
         words = { enabled = false },
         toggle = {
           enabled = true,

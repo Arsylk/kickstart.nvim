@@ -7,12 +7,13 @@ return {
       'WhoIsSethDaniel/mason-tool-installer.nvim',
       'folke/lazydev.nvim',
       'b0o/schemastore.nvim',
-      { 'j-hui/fidget.nvim' },
+      'saghen/blink.cmp',
+      'j-hui/fidget.nvim',
     },
     config = function()
       require('lazydev').setup {}
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+      capabilities = vim.tbl_deep_extend('force', capabilities, require('blink.cmp').get_lsp_capabilities())
       capabilities.textDocument.completion.completionItem.snippetSupport = true
       capabilities.textDocument.callHierarchy.dynamicRegistration = true
 
@@ -89,6 +90,29 @@ return {
               },
               staticcheck = true,
               gofumpt = true,
+            },
+          },
+        },
+        jsonls = {
+          cmd = 'nya',
+          settings = {
+            jsonls = {},
+            java = {
+              import = {
+                gradle = {
+                  enabled = true,
+                },
+                maven = {
+                  enabled = true,
+                },
+                exclusions = {
+                  '**/node_modules/**',
+                  '**/.metadata/**',
+                  '**/archetype-resources/**',
+                  '**/META-INF/maven/**',
+                  '/**/test/**',
+                },
+              },
             },
           },
         },

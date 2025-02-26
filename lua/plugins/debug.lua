@@ -75,6 +75,7 @@ return {
       ensure_installed = {
         'delve',
         'debugpy',
+        'java',
       },
     },
   },
@@ -82,8 +83,9 @@ return {
   {
     'mfussenegger/nvim-dap',
     dependencies = {
-      'rcarriga/nvim-dap-ui',
       'nvim-neotest/nvim-nio',
+      { 'rcarriga/nvim-dap-ui', opts = {} },
+      { 'igorlfs/nvim-dap-view', opts = {} },
 
       -- Add your own debuggers here
       'leoluz/nvim-dap-go',
@@ -113,6 +115,24 @@ return {
     config = function()
       local dap = require 'dap'
       local dapui = require 'dapui'
+
+      dap.adapters = dap.adapters or {}
+      dap.adapters.java = {
+        type = 'server',
+        host = '127.0.0.1',
+        port = 5005,
+      }
+
+      dap.configurations = dap.configurations or {}
+      dap.configurations.java = {
+        {
+          type = 'java',
+          request = 'attach',
+          name = 'Attach to Ghidra',
+          hostName = 'localhost',
+          port = 5005,
+        },
+      }
 
       -- Basic debugging keymaps, feel free to change to your liking!
       vim.keymap.set('n', '<F1>', dap.step_into, { desc = 'Debug: Step Into' })
@@ -162,6 +182,9 @@ return {
 
       -- Install python specific config
       require('dap-python').setup(get_python_path(), get_python_opts())
+
+      -- Install java specific config
+      -- require('jdtls.dap').setup_dap {}
     end,
   },
 }

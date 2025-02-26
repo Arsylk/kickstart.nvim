@@ -26,6 +26,15 @@ vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 vim.o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 
+for _, group in pairs {
+  'DapBreakpoint',
+  'DapBreakpointCondition',
+  'DapBreakpointRejected',
+  'DapLogPoint',
+} do
+  vim.fn.sign_define(group, { text = '●', texthl = group })
+end
+
 local signs = { Error = '󰅚', Warn = '󰀪', Hint = '󰌶', Info = '' }
 for type, icon in pairs(signs) do
   local hl = 'DiagnosticSign' .. type
