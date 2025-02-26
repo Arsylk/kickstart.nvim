@@ -49,6 +49,7 @@ return {
         python = { 'ruff_format' },
         caddyfile = { 'caddyfile' },
         c = { 'clang-format' },
+        java = {},
       },
       formatters = {
         caddyfile = {

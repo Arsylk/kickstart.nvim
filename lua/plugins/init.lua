@@ -21,6 +21,7 @@ return {
         },
         integrations = {
           cmp = true,
+          blink_cmp = true,
           gitsigns = true,
           treesitter = true,
           noice = true,

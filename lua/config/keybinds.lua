@@ -5,7 +5,11 @@ map('n', '<C-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
 map('n', '<C-a>', 'gg^vG$', { desc = 'Select all', noremap = true, silent = true })
 map('n', '<D-a>', 'gg^vG$', { desc = 'which-key.ignore', noremap = true, silent = true })
 map({ 'i', 'n' }, '<C-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
-map({ 'i', 'n' }, '<D-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
+map({ 'i', 'n' }, '<D-s>', '<cmd>w<CR>', { noremap = true, desc = 'which-key.ignore' })
+map('n', '<D-z>', 'u', { desc = 'which-key.ignore' }) -- Undo
+map('i', '<D-z>', '<C-o>u', { desc = 'which-key.ignore' }) -- Undo
+map('n', '<D-Z>', '<C-r>', { desc = 'which-key.ignore' }) -- Undo
+map('i', '<D-Z>', '<C-o><C-r>', { desc = 'which-key.ignore' }) -- Undo
 
 -- Activate Ctrl+V as paste
 map('c', '<C-v>', function()
@@ -253,17 +257,31 @@ vim.api.nvim_create_autocmd('User', {
   pattern = 'VeryLazy',
   callback = function()
     -- Autopair toggle
-    Snacks.toggle
-      .new({
-        name = 'Autopair',
-        get = function()
-          return not require('nvim-autopairs').state.disabled
-        end,
-        set = function(state)
-          require('nvim-autopairs').state.disabled = not state
-        end,
-      })
-      :map '<leader>ta'
+    local ok, blink = pcall(require, 'blink.cmp.config')
+    if ok then
+      Snacks.toggle
+        .new({
+          name = 'Autocomplete',
+          get = function()
+            return vim.b.completaion
+          end,
+          set = function(state)
+            vim.b.completion = not state
+          end,
+        })
+        :map '<leader>tb'
+      Snacks.toggle
+        .new({
+          name = 'Autopair',
+          get = function()
+            return blink.completion.accept.auto_brackets.enabled
+          end,
+          set = function(state)
+            blink.completion.accept.auto_brackets.enabled = not state
+          end,
+        })
+        :map '<leader>tb'
+    end
     -- UndoTree toggle
     Snacks.toggle
       .new({
@@ -285,7 +303,7 @@ vim.api.nvim_create_autocmd('User', {
       .new({
         name = 'Autoformat',
         get = function()
-          return vim.g.autosave
+          return vim.g.autoformat
         end,
         set = function(state)
           if state then
@@ -295,7 +313,7 @@ vim.api.nvim_create_autocmd('User', {
           end
         end,
       })
-      :map '<leader>ta'
+      :map '<leader>tf'
   end,
 })
 
@@ -306,8 +324,14 @@ end, { desc = 'Debug: See last session result.' })
 
 if vim.g.neovide then
   map('n', '<D-s>', ':w<CR>', { desc = 'which-key.ignore' }) -- Save
+  map('n', '<D-z>', 'u', { desc = 'which-key.ignore' }) -- Undo
+  map('i', '<D-z>', '<C-o>u', { desc = 'which-key.ignore' }) -- Undo
+  map('n', '<D-Z>', '<C-r>', { desc = 'which-key.ignore' }) -- Undo
+  map('i', '<D-Z>', '<C-o><C-r>', { desc = 'which-key.ignore' }) -- Undo
   map('v', '<D-c>', '"+y', { desc = 'which-key.ignore' }) -- Copy
   map('n', '<D-v>', '"+P', { desc = 'which-key.ignore' }) -- Paste normal mode
+  map('t', '<D-v>', '<ESC>"+Pi', { desc = 'which-key.ignore' }) -- Paste terminal mode
+  map('l', '<D-v>', '<ESC>"+Pi', { desc = 'which-key.ignore' }) -- Paste terminal mode
   map('v', '<D-v>', '"+P', { desc = 'which-key.ignore' }) -- Paste visual mode
   map('c', '<D-v>', '<C-R>+', { desc = 'which-key.ignore' }) -- Paste command mode
   map('i', '<D-v>', '<ESC>l"+Pli', { desc = 'which-key.ignore' }) -- Paste insert mode
