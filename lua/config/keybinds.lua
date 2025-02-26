@@ -1,15 +1,37 @@
-local map = vim.keymap.set
+---@param mode string|string[]
+---@param lhs string|string[]
+---@param rhs string|function
+---@param opts? vim.keymap.set.Opts
+local map = function(mode, lhs, rhs, opts)
+  ---@cast lhs string[]
+  lhs = type(lhs) == 'string' and { lhs } or lhs
+  for i, key in pairs(lhs) do
+    if i > 1 and opts ~= nil and opts.desc then
+      opts.desc = 'which-key.ignore'
+    end
+    vim.keymap.set(mode, key, rhs, opts)
+  end
+end
+--- @param index number
+--- @param desc string
+local first_desc = function(index, desc)
+  return index == 1 and desc or 'which-key.ignore'
+end
+--- @param value number
+--- @param min number
+--- @param max number
+local clamp = function(value, min, max)
+  return math.min(max, math.max(min, value))
+end
 
 -- The good 'ol keybinds
-map('n', '<C-c>', '<cmd>%y+<CR>', { desc = 'File copy whole' })
-map('n', '<C-a>', 'gg^vG$', { desc = 'Select all', noremap = true, silent = true })
-map('n', '<D-a>', 'gg^vG$', { desc = 'which-key.ignore', noremap = true, silent = true })
-map({ 'i', 'n' }, '<C-s>', '<cmd>w<CR>', { noremap = true, desc = 'File save' })
-map({ 'i', 'n' }, '<D-s>', '<cmd>w<CR>', { noremap = true, desc = 'which-key.ignore' })
-map('n', '<D-z>', 'u', { desc = 'which-key.ignore' }) -- Undo
-map('i', '<D-z>', '<C-o>u', { desc = 'which-key.ignore' }) -- Undo
-map('n', '<D-Z>', '<C-r>', { desc = 'which-key.ignore' }) -- Undo
-map('i', '<D-Z>', '<C-o><C-r>', { desc = 'which-key.ignore' }) -- Undo
+map('n', { '<C-c>', '<D-c>' }, '<cmd>%y+<CR>', { desc = 'File copy whole' })
+map('n', { '<C-a>', '<D-a>' }, 'gg^vG$', { desc = 'Select all', noremap = true, silent = true })
+map({ 'i', 'n' }, { '<C-s>', '<D-s>' }, '<cmd>w<CR>', { noremap = true, desc = 'File save' })
+map('n', { '<C-z>', '<D-z>' }, 'u', { desc = 'which-key.ignore' }) -- Undo
+map('i', { '<C-z>', '<D-z>' }, '<C-o>u', { desc = 'which-key.ignore' }) -- Undo
+map('n', { '<C-Z>', '<D-Z>' }, '<C-r>', { desc = 'which-key.ignore' }) -- Undo
+map('i', { '<C-Z>', '<D-Z>' }, '<C-o><C-r>', { desc = 'which-key.ignore' }) -- Undo
 
 -- Activate Ctrl+V as paste
 map('c', '<C-v>', function()
@@ -28,7 +50,7 @@ map('i', '<C-v>', '<cmd>normal "+p<CR>', { noremap = true, desc = 'Command paste
 map('n', '<S-Esc><S-Esc><Del>', '<Cmd>qa!<CR>', { nowait = true, noremap = true, desc = 'Instant Quit' })
 
 -- Display diagnostics under cursor
-map('n', '<D-d>', vim.diagnostic.open_float, { desc = 'Show diagnostics under the cursor' })
+map('n', { '<C-d>', '<D-d>' }, vim.diagnostic.open_float, { desc = 'Show diagnostics under the cursor' })
 
 -- Edit path under cursor
 map('n', 'ge', function()
@@ -94,51 +116,52 @@ vim.api.nvim_create_autocmd('FileType', {
 vim.api.nvim_create_autocmd('FileType', {
   pattern = { 'toggleterm' },
   callback = function(params)
-    for i, key in pairs { '<leader><C-c>', '<leader><D-c>' } do
-      map('n', key, function()
-        local terminal = require 'toggleterm.terminal'
-        local id = terminal.get_focused_id()
-        if id then
-          local term = terminal.get(id, true)
-          if term then
-            term:shutdown()
-          end
+    map('n', { '<leader><C-c>', '<leader><D-c>' }, function()
+      local terminal = require 'toggleterm.terminal'
+      local id = terminal.get_focused_id()
+      if id then
+        local term = terminal.get(id, true)
+        if term then
+          term:shutdown()
         end
-      end, { desc = i == 1 and 'Shutdown terminal' or 'which-key.ignore', buffer = params.buf })
-    end
+      end
+    end, { desc = 'Shutdown terminal', buffer = params.buf })
   end,
 })
 
 -- Break inserted text into smaller undo units
 local undo_ch = { ',', '.', '!', '?', ';', ':' }
 for _, ch in ipairs(undo_ch) do
-  map('i', ch, ch .. '<c-g>u')
+  map('i', ch, ch .. '<C-g>u')
 end
 
 map('x', '$', 'g_')
 
 -- Open autocomplete from normal mode
-map('n', '<C-Space>', function()
-  local ok, cmp = pcall(require, 'cmp')
+map('n', { '<C-Space>', '<D-Space>' }, function()
+  local ok, cmp = pcall(require, 'blink-cmp')
   if not ok then
     return
   end
   vim.cmd [[startinsert]]
-  vim.schedule(cmp.complete)
+  cmp.show()
 end, { silent = true, desc = 'Open autocomplete' })
 
 -- Keep cursor centered when PgUp & PgDown
 map('n', '<PageDown>', '<C-d><C-d>zz', { desc = 'Page down' })
 map('n', '<PageUp>', '<C-u><C-u>zz', { desc = 'Page up' })
-map('n', '<C-d>', '<C-d>zz', { desc = 'Half page down' })
-map('n', '<C-u>', '<C-u>zz', { desc = 'Half page up' })
-map('n', 'n', 'nzz', { noremap = true })
-map('n', 'N', 'Nzz', { noremap = true })
+map('n', '<C-PageDown>', '<C-d>zz', { desc = 'Half page down' })
+map('n', '<C-PageUp>', '<C-u>zz', { desc = 'Half page up' })
+map('n', 'n', 'nzz', { desc = 'Next', noremap = true })
+map('n', 'N', 'Nzz', { desc = 'Previous', noremap = true })
+
+-- Additional buffer navigation
+map('', '[b', '<Cmd>bprevious<CR>', { desc = 'previous [b]uffer', silent = true })
+map('', ']b', '<Cmd>bnext<CR>', { desc = 'next [b]uffer', silent = true })
 
 -- Overseer toggle window
 map('n', '<F12>', '<Cmd>OverseerToggle<CR>', { noremap = true, desc = 'Toggle Overseer window' })
-map('n', '<C-F12>', '<Cmd>OverseerRun<CR>', { noremap = true, desc = 'Overseer Run' })
-map('n', '<F36>', '<Cmd>OverseerRun<CR>', { noremap = true, desc = 'Overseer Run' })
+map('n', { '<C-F12>', '<F36>' }, '<Cmd>OverseerRun<CR>', { noremap = true, desc = 'Overseer Run' })
 map('n', '<S-F12>', '<Cmd>OverseerRunCmd<CR>', { noremap = true, desc = 'Overseer Run Cmd' })
 
 -- Redirect command output and allow edit
@@ -176,24 +199,25 @@ end, { desc = '[F]ind [Y]ank History' })
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('custom-lsp-attach', { clear = true }),
   callback = function(event)
-    local map = function(keys, fn, desc)
+    local lspmap = function(keys, fn, desc)
       vim.keymap.set('n', keys, fn, { buffer = event.buf, desc = 'LSP: ' .. desc })
     end
 
     local fzf = require 'fzf-lua'
-    map('<leader>ca', fzf.lsp_code_actions, '[C]ode [A]ctions')
-    map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+    lspmap('<leader>cl', vim.lsp.codelens.run, '[C]ode [L]ens')
+    lspmap('<leader>ca', fzf.lsp_code_actions, '[C]ode [A]ctions')
+    lspmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
 
-    map('gf', fzf.lsp_finder, '[G]oto Lsp [F]inder')
-    map('gd', fzf.lsp_definitions, '[G]oto [D]efinition')
-    map('gr', fzf.lsp_references, '[G]oto [R]eferences')
-    map('gi', fzf.lsp_implementations, '[G]oto [I]mplementation')
-    map('gt', fzf.lsp_typedefs, '[G]oto [T]ype Definition')
-    map('gD', fzf.lsp_declarations, '[G]oto [D]eclarations')
-    map('gic', fzf.lsp_incoming_calls, '[G]oto [I]ncoming [C]alls')
-    map('goc', fzf.lsp_outgoing_calls, '[G]oto [O]utgoing [C]alls')
+    lspmap('gf', fzf.lsp_finder, '[G]oto Lsp [F]inder')
+    lspmap('gd', fzf.lsp_definitions, '[G]oto [D]efinition')
+    lspmap('gr', fzf.lsp_references, '[G]oto [R]eferences')
+    lspmap('gi', fzf.lsp_implementations, '[G]oto [I]mplementation')
+    lspmap('gt', fzf.lsp_typedefs, '[G]oto [T]ype Definition')
+    lspmap('gD', fzf.lsp_declarations, '[G]oto [D]eclarations')
+    lspmap('gic', fzf.lsp_incoming_calls, '[G]oto [I]ncoming [C]alls')
+    lspmap('goc', fzf.lsp_outgoing_calls, '[G]oto [O]utgoing [C]alls')
 
-    vim.keymap.set({ 'n', 'i' }, '<A-k>', vim.lsp.buf.hover, { noremap = true })
+    map({ 'n', 'i' }, '<A-k>', vim.lsp.buf.hover, { noremap = true })
   end,
 })
 
@@ -213,7 +237,7 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
       else
         gitsigns.nav_hunk 'next'
       end
-    end, 'Jump to next [C]hange')
+    end, 'next [c]hange')
 
     map('n', '[c', function()
       if vim.wo.diff then
@@ -221,7 +245,7 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
       else
         gitsigns.nav_hunk 'prev'
       end
-    end, 'Jump to previous [C]hange')
+    end, 'previous [c]hange')
 
     -- normal mo
     map('n', '<leader>hs', gitsigns.stage_hunk, '[s]tage hunk')
@@ -341,15 +365,6 @@ if vim.g.neovide then
   local change_scale_factor = function(delta)
     vim.g.neovide_scale_factor = vim.g.neovide_scale_factor * delta
   end
-  map('n', '<C-+>', function()
-    change_scale_factor(1.1)
-  end, { desc = 'Increase font size' })
-  map('n', '<C-_>', function()
-    change_scale_factor(1 / 1.1)
-  end, { desc = 'Decrease font size' })
-  map('n', '<C-)>', function()
-    vim.g.neovide_scale_factor = 1.0
-  end, { desc = 'Reset font size' })
   local alpha = function()
     return string.format('%x', math.floor(255 * (vim.g.neovide_transparency_point or 0.8)))
   end
@@ -359,13 +374,25 @@ if vim.g.neovide then
   vim.g.neovide_background_color = '#0f1117' .. alpha()
   -- Add keybinds to change transparency
   local change_transparency = function(delta)
-    vim.g.neovide_transparency_point = vim.g.neovide_transparency_point + delta
+    vim.g.neovide_transparency = clamp(vim.g.neovide_transparency + delta, 0.0, 1.0)
+    vim.g.neovide_transparency_point = clamp(vim.g.neovide_transparency_point + delta, 0.0, 1.0)
     vim.g.neovide_background_color = '#0f1117' .. alpha()
   end
-  map({ 'n', 'v', 'o' }, '<D-]>', function()
-    change_transparency(0.01)
-  end)
-  map({ 'n', 'v', 'o' }, '<D-[>', function()
-    change_transparency(-0.01)
-  end)
+  for _, key in pairs { 'C', 'D' } do
+    map('n', string.format('<%s-]>', key), function()
+      change_transparency(0.05)
+    end, { desc = first_desc 'Increase transparency' })
+    map('n', string.format('<%s-[>', key), function()
+      change_transparency(-0.05)
+    end, { desc = first_desc 'Decrease transparency' })
+    map('n', string.format('<%s-+>', key), function()
+      change_scale_factor(1.1)
+    end, { desc = first_desc 'Increase font size' })
+    map('n', string.format('<%s-_>', key), function()
+      change_scale_factor(1 / 1.1)
+    end, { desc = first_desc 'Decrease font size' })
+    map('n', string.format('<%s-)>', key), function()
+      vim.g.neovide_scale_factor = 1.0
+    end, { desc = first_desc 'Reset font size' })
+  end
 end

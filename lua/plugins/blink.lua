@@ -67,7 +67,10 @@ return {
 
         documentation = {
           auto_show = true,
-          window = {},
+          window = {
+            border = 'rounded',
+            scrollbar = false,
+          },
         },
 
         ghost_text = {
@@ -75,22 +78,37 @@ return {
         },
 
         menu = {
+          winhighlight = 'Normal:Normal,FloatBorder:@keyword,CursorLine:Bold',
           border = 'rounded',
           scrollbar = false,
           auto_show = function(ctx)
-            return ctx.mode ~= 'cmdline' or not vim.tbl_contains({ '/', '?' }, vim.fn.getcmdtype())
+            return not vim.tbl_contains({ '/', '?' }, vim.fn.getcmdtype())
+          end,
+          cmdline_position = function()
+            if vim.g.ui_cmdline_pos ~= nil then
+              local pos = vim.g.ui_cmdline_pos
+              return { pos[1], pos[2] - 4 }
+            end
+            local height = (vim.o.cmdheight == 0) and 1 or vim.o.cmdheight
+            return { vim.o.lines - height, 0 }
           end,
           draw = {
             align_to = 'none',
             columns = { { 'kind_icon' }, { 'label', gap = 1 }, { 'source_name' } },
             components = {
               label = {
-                width = { fill = true, max = 60 },
+                width = { fill = true, min = 18, max = 60 },
                 text = function(ctx)
                   return require('colorful-menu').blink_components_text(ctx)
                 end,
                 highlight = function(ctx)
                   return require('colorful-menu').blink_components_highlight(ctx)
+                end,
+              },
+              kind_icon = {
+                highlight = function(ctx)
+                  local cap = ctx.kind:gsub('^%l', string.upper)
+                  return string.format('BlinkCmpKind%s', cap)
                 end,
               },
               source_name = {
@@ -99,6 +117,19 @@ return {
                   return ctx.source_name:lower()
                 end,
                 highlight = 'BlinkCmpSource',
+              },
+              cmdline_label = {
+                width = { fixed = 60 },
+                text = function(ctx)
+                  return ctx.label
+                end,
+                highlight = function(ctx)
+                  local highlights = { { 0, #ctx.label, group = 'BlinkCmpLabel' } }
+                  for _, idx in ipairs(ctx.label_matched_indices) do
+                    table.insert(highlights, { idx, idx + 1, group = '@keyword' })
+                  end
+                  return highlights
+                end,
               },
             },
           },
@@ -116,14 +147,25 @@ return {
         },
       },
 
-      -- cmdline = {
-      --   sources = {},
-      -- },
-
       keymap = {
         preset = 'enter',
         ['<Tab>'] = { 'snippet_forward', 'select_next', 'fallback' },
         ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
+      },
+
+      cmdline = {
+        enabled = true,
+        completion = {
+          menu = {
+            auto_show = true,
+            draw = {
+              columns = {
+                { 'cmdline_label' },
+              },
+            },
+          },
+        },
+        sources = { 'cmdline' },
       },
     },
 
