@@ -22,6 +22,13 @@ return {
           settings = {
             biome = {
               single_file_support = true,
+              root_dir = function(startpath)
+                local util = require 'lspconfig.util'
+                return util.root_pattern('biome.json', 'biome.jsonc')(startpath)
+                  or vim.fs.dirname(vim.fs.find('package.json', { path = startpath, upward = true })[1])
+                  or vim.fs.dirname(vim.fs.find('node_modules', { path = startpath, upward = true })[1])
+                  or vim.fs.dirname(vim.fs.find('.git', { path = startpath, upward = true })[1])
+              end,
             },
           },
         },
@@ -90,29 +97,6 @@ return {
               },
               staticcheck = true,
               gofumpt = true,
-            },
-          },
-        },
-        jsonls = {
-          cmd = 'nya',
-          settings = {
-            jsonls = {},
-            java = {
-              import = {
-                gradle = {
-                  enabled = true,
-                },
-                maven = {
-                  enabled = true,
-                },
-                exclusions = {
-                  '**/node_modules/**',
-                  '**/.metadata/**',
-                  '**/archetype-resources/**',
-                  '**/META-INF/maven/**',
-                  '/**/test/**',
-                },
-              },
             },
           },
         },

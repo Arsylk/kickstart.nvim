@@ -24,7 +24,6 @@ return {
                 break
               end
             end
-            log { win = winnr, last = lastwin }
             if not lastwin then
               return
             end
@@ -50,7 +49,7 @@ return {
     },
     keys = {
       {
-        '<C-T>',
+        '<C-t>',
         function()
           local Terminal = require('toggleterm.terminal').Terminal
           local inst = Terminal:new {

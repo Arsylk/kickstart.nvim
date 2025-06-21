@@ -10,7 +10,6 @@ end
 
 vim.keymap.set('n', 'ss', function()
   local modifiable = vim.api.nvim_get_option_value('modifiable', { buf = 0 })
-
   if not modifiable then
     local n = require 'snacks.notify'
     n.error "E21: Cannot make changes, 'modifiable' is off"

@@ -1,44 +1,4 @@
-local kinds = {
-  Array = ' ',
-  Boolean = '󰨙 ',
-  Class = ' ',
-  Codeium = '󰘦 ',
-  Color = ' ',
-  Control = ' ',
-  Collapsed = ' ',
-  Constant = '󰏿 ',
-  Constructor = ' ',
-  Copilot = ' ',
-  Enum = ' ',
-  EnumMember = ' ',
-  Event = ' ',
-  Field = ' ',
-  File = ' ',
-  Folder = ' ',
-  Function = '󰊕 ',
-  Interface = ' ',
-  Key = ' ',
-  Keyword = ' ',
-  Method = '󰊕 ',
-  Module = ' ',
-  Namespace = '󰦮 ',
-  Null = ' ',
-  Number = '󰎠 ',
-  Object = ' ',
-  Operator = ' ',
-  Package = ' ',
-  Property = ' ',
-  Reference = ' ',
-  Snippet = '󰕢 ',
-  String = ' ',
-  Struct = '󰆼 ',
-  TabNine = '󰏚 ',
-  Text = ' ',
-  TypeParameter = ' ',
-  Unit = ' ',
-  Value = ' ',
-  Variable = '󰀫 ',
-}
+local kinds = require('config.icons').get 'kind'
 
 return {
   {
@@ -68,6 +28,7 @@ return {
         documentation = {
           auto_show = true,
           window = {
+            winhighlight = 'Normal:Normal,FloatBorder:@keyword,CursorLine:Bold',
             border = 'rounded',
             scrollbar = false,
           },
@@ -85,6 +46,9 @@ return {
             return not vim.tbl_contains({ '/', '?' }, vim.fn.getcmdtype())
           end,
           cmdline_position = function()
+            if vim.tbl_contains({ '/', '?' }, vim.fn.getcmdtype()) then
+              return { vim.o.lines - 1, 0 }
+            end
             if vim.g.ui_cmdline_pos ~= nil then
               local pos = vim.g.ui_cmdline_pos
               return { pos[1], pos[2] - 4 }
@@ -94,15 +58,33 @@ return {
           end,
           draw = {
             align_to = 'none',
-            columns = { { 'kind_icon' }, { 'label', gap = 1 }, { 'source_name' } },
+            columns = function(ctx)
+              if ctx.get_mode() == 'cmdline' then
+                return { { 'cmdline_label' } }
+              end
+              return { { 'kind_icon' }, { 'label', gap = 1 }, { 'source_name' } }
+            end,
             components = {
               label = {
                 width = { fill = true, min = 18, max = 60 },
                 text = function(ctx)
-                  return require('colorful-menu').blink_components_text(ctx)
+                  local highlights_info = require('colorful-menu').blink_highlights(ctx)
+                  if highlights_info ~= nil then
+                    return highlights_info.label
+                  else
+                    return ctx.label
+                  end
                 end,
                 highlight = function(ctx)
-                  return require('colorful-menu').blink_components_highlight(ctx)
+                  local highlights = {}
+                  local highlights_info = require('colorful-menu').blink_highlights(ctx)
+                  if highlights_info ~= nil then
+                    highlights = highlights_info.highlights
+                  end
+                  for _, idx in ipairs(ctx.label_matched_indices) do
+                    table.insert(highlights, { idx, idx + 1, group = 'BlinkCmpLabelMatch' })
+                  end
+                  return highlights
                 end,
               },
               kind_icon = {
@@ -144,6 +126,10 @@ return {
             module = 'lazydev.integrations.blink',
             score_offset = 100,
           },
+          buffer = {
+            max_items = 5,
+            min_keyword_length = 2,
+          },
         },
       },
 
@@ -164,10 +150,14 @@ return {
               },
             },
           },
+          list = {
+            selection = {
+              preselect = false,
+            },
+          },
         },
         sources = { 'cmdline' },
       },
-
       snippets = {
         preset = 'luasnip',
         expand = function(snippet)
@@ -200,5 +190,90 @@ return {
       opts.appearance.kind_icons = vim.tbl_extend('force', opts.appearance.kind_icons or {}, kinds)
       require('blink-cmp').setup(opts)
     end,
+  },
+  {
+    'saghen/blink.pairs',
+    dependencies = 'saghen/blink.download',
+    version = '*',
+    -- build = 'cargo build --release',
+    opts = {
+      mappings = {
+        enabled = true,
+        pairs = {},
+      },
+      highlights = {
+        enabled = true,
+        groups = {
+          'rainbow1',
+          'rainbow2',
+          'rainbow3',
+          'rainbow4',
+          'rainbow5',
+          'rainbow6',
+        },
+        matchparen = {
+          enabled = true,
+          group = 'MatchParen',
+        },
+      },
+    },
+  },
+  {
+
+    enabled = false,
+    'saghen/blink.nvim',
+    opts = {
+      indent = {
+        enabled = true,
+        -- start with indent guides visible
+        visible = true,
+        blocked = {
+          buftypes = {
+            'prompt',
+          },
+          filetypes = {
+            'dashboard',
+            'noice',
+            'snacks_notif',
+            'whichkey',
+            'oil',
+            'oil_preview',
+            'blink-cmp-menu',
+          },
+        },
+        static = {
+          enabled = false,
+          char = '▏',
+          priority = 1,
+          highlights = {
+            'BlinkIndent',
+          },
+        },
+        scope = {
+          enabled = true,
+          char = '▏',
+          priority = 16,
+          highlights = {
+            'rainbow1',
+            'rainbow2',
+            'rainbow3',
+            'rainbow4',
+            'rainbow5',
+            'rainbow6',
+          },
+          underline = {
+            enabled = false,
+            highlights = {
+              'rainbow1',
+              'rainbow2',
+              'rainbow3',
+              'rainbow4',
+              'rainbow5',
+              'rainbow6',
+            },
+          },
+        },
+      },
+    },
   },
 }

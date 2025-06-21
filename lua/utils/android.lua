@@ -263,7 +263,9 @@ local frida_command = function(device_id, package_id, script)
     cmd = cmd .. ' -D ' .. device_id
   end
   cmd = cmd .. ' -f ' .. package_id
+  cmd = cmd .. ' -P ' .. string.format('\'{"packageName": "%s"}\'', package_id)
   cmd = cmd .. ' -o session.txt'
+  cmd = cmd .. ' -l patch.js'
   cmd = cmd .. ' -l ' .. (script or 'script.js')
   return cmd
 end
@@ -351,7 +353,7 @@ vim.api.nvim_create_autocmd('User', {
           file = {
             desc = 'Frida Server file',
             type = 'string',
-            default = 'nya-server-arm64',
+            default = 'nya-server64',
           },
           cmd = {
             desc = 'Command ran in adb shell',
@@ -362,7 +364,7 @@ vim.api.nvim_create_autocmd('User', {
         }
       end,
       builder = function(params)
-        local file = ('/data/local/tmp/%s'):format(params.file)
+        local file = ("'killall %s 2>/dev/null; /data/local/tmp/%s'"):format(params.file, params.file)
         return {
           cmd = { 'adb', '-s', params.device, 'shell', params.cmd, file },
         }

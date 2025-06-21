@@ -19,21 +19,39 @@ vim.api.nvim_create_user_command('Redir', function(ctx)
 end, { nargs = '+', complete = 'command' })
 
 -- Conform pretty format command
-vim.api.nvim_create_user_command('ConformFormat', function()
+vim.api.nvim_create_user_command('ConformFormat', function(args)
   local fmt = require('conform').list_formatters_for_buffer(0)[1]
-  local msg = ('Running %s on %s'):format(fmt, vim.api.nvim_buf_get_name(0))
+  local msg = string.format('Running %s on %s', fmt, vim.api.nvim_buf_get_name(0))
 
-  local record = vim.notify(msg, vim.log.levels.INFO, {})
-  require('conform').format({ async = true, lsp_fallback = true }, function(err, did_edit)
+  local range = nil
+  if args.count ~= -1 then
+    local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1, args.line2, true)[1]
+    range = {
+      start = { args.line1, 0 },
+      ['end'] = { args.line2, end_line:len() },
+    }
+  end
+
+  vim.notify(msg, vim.log.levels.INFO, {})
+  require('conform').format({ async = true, lsp_fallback = true, range = range, formatters = { fmt } }, function(err, did_edit)
     if err then
-      vim.notify(('Error from %s'):format(fmt), vim.log.levels.ERROR, { replace = record })
+      vim.notify(('Error from %s'):format(fmt), vim.log.levels.ERROR, {})
     elseif did_edit then
-      vim.notify('File formatted successfully', vim.log.levels.INFO, { replace = record })
+      vim.notify('File formatted successfully', vim.log.levels.INFO, {})
     else
-      vim.notify('File is already formatted', vim.log.levels.INFO, { replace = record })
+      vim.notify('File is already formatted', vim.log.levels.INFO, {})
     end
   end)
-end, { desc = 'Format current buffer with Conform', nargs = 0 })
+end, {
+  desc = 'Format current buffer with Conform',
+  range = true,
+  nargs = '?',
+  complete = function()
+    return vim.tbl_map(function(x)
+      return x.name
+    end, require('conform').list_all_formatters())
+  end,
+})
 
 -- Perform live(ish) command operations
 vim.api.nvim_create_user_command('Playdict', function(ctx)

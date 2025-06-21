@@ -14,7 +14,20 @@ vim.diagnostic.config {
     scope = 'line',
     border = 'rounded',
   },
-  signs = true,
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = '󰅚',
+      [vim.diagnostic.severity.WARN] = '󰀪',
+      [vim.diagnostic.severity.INFO] = '',
+      [vim.diagnostic.severity.HINT] = '󰌶',
+    },
+    linehl = {
+      [vim.diagnostic.severity.ERROR] = 'CursorLine',
+    },
+    numhl = {
+      [vim.diagnostic.severity.WARN] = 'WarningMsg',
+    },
+  },
   underline = true,
   virtual_text = false,
   severity_sort = true,

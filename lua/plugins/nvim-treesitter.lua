@@ -4,6 +4,7 @@ return {
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
       'RRethy/nvim-treesitter-textsubjects',
+      'chrisgrieser/nvim-various-textobjs',
     },
     build = ':TSUpdate',
     opts = {
@@ -68,6 +69,8 @@ return {
     config = function(_, opts)
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup(opts)
+      local parsers = require('nvim-treesitter.parsers').get_parser_configs()
+      parsers.report = vim.tbl_deep_extend('force', parsers.markdown, {})
     end,
   },
 }

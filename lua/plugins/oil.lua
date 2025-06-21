@@ -29,7 +29,7 @@ return {
 
     keymaps = {
       ['<C-s>'] = false,
-      ['<C-t>'] = false,
+      ['<C-T>'] = false,
       ['gd'] = {
         desc = 'Toggle file details on list',
         callback = function()
@@ -97,7 +97,8 @@ return {
           -- double Q to close window
           vim.keymap.set('', 'qq', require('oil').close, { buffer = bufnr, desc = 'Close current window' })
 
-          -- disable <C-s>
+          -- disable <C-T>
+          pcall(vim.keymap.del, '', '<C-T>', { buffer = bufnr })
 
           -- toggle detailed list mode
           vim.keymap.set('', '<leader>tnnn', function()

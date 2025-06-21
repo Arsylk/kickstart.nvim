@@ -1,0 +1,28 @@
+diff --git a/lua/mini/indentscope.lua b/lua/mini/indentscope.lua
+index e44fb4b..01c2e73 100644
+--- a/lua/mini/indentscope.lua
++++ b/lua/mini/indentscope.lua
+@@ -829,7 +829,11 @@ H.indicator_compute = function(scope)
+ 
+   -- Pick highlight group based on if indent is a multiple of shiftwidth.
+   -- This adds visual indicator of whether indent is "correct".
+-  local hl_group = (indent % vim.fn.shiftwidth() == 0) and 'MiniIndentscopeSymbol' or 'MiniIndentscopeSymbolOff'
++  local hl_group = 'MiniIndentscopeSymbolOff'
++  if indent % vim.fn.shiftwidth() == 0 then
++    local depth = indent / vim.fn.shiftwidth() + 1
++    hl_group = require('rainbow-delimiters').hlgroup_at(depth)
++  end
+   local virt_text = { { H.get_config().symbol, hl_group } }
+ 
+   return {
+@@ -964,9 +968,7 @@ H.make_draw_function = function(indicator, opts)
+     virt_text_pos = 'overlay',
+   }
+ 
+-  if H.has_wrapped_virt_text and vim.wo.breakindent and vim.wo.showbreak == '' then
+-    extmark_opts.virt_text_repeat_linebreak = true
+-  end
++  if H.has_wrapped_virt_text and vim.wo.breakindent then extmark_opts.virt_text_repeat_linebreak = true end
+ 
+   local current_event_id = opts.event_id
+ 

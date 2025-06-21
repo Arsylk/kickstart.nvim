@@ -46,6 +46,7 @@ return {
           dap = true,
           lsp_trouble = true,
           overseer = true,
+          grug_far = true,
           snacks = true,
           illuminate = {
             enabled = true,
