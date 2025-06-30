@@ -1,7 +1,6 @@
 return {
   {
     'folke/lazydev.nvim',
-    dependencies = { 'hrsh7th/nvim-cmp', optional = true },
     ft = 'lua',
     opts = {
       library = {

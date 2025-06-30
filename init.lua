@@ -137,7 +137,6 @@ if not vim.loop.fs_stat(lazypath) then
   vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
-print(vim.inspect(require 'config.icons'))
 local icons = {
   kind = {},
   documents = require('config.icons').get 'documents',
@@ -145,32 +144,35 @@ local icons = {
   ui_sep = require('config.icons').get('ui', true),
   misc = require('config.icons').get 'misc',
 }
+
+-- general neovide related configs
+if vim.g.neovide then
+  vim.o.guifont = 'JetBrains Mono NL'
+  vim.g.neovide_padding_right = 12
+  vim.g.neovide_padding_left = 12
+  vim.g.neovide_padding_bottom = 4
+  vim.g.neovide_padding_top = 12
+else
+  vim.o.guifont = 'FiraCode Nerd Font Mono'
+end
+
+-- [[ Configure and install plugins ]]
+--
+--  To check the current status of your plugins, run
+--    :Lazy
+--
+--  You can press `?` in this menu for help. Use `:q` to close the window
+--
+--  To update plugins you can run
+--    :Lazy update
+--method
+-- NOTE: Here is where you install your plugins.
 local opts = {
   ui = {
     size = { width = 0.88, height = 0.8 },
     wrap = true,
     border = 'rounded',
-    icons = {
-      cmd = icons.misc.Code,
-      config = icons.ui.Gear,
-      event = icons.kind.Event,
-      ft = icons.documents.Files,
-      init = icons.misc.ManUp,
-      import = icons.documents.Import,
-      keys = icons.ui.Keyboard,
-      loaded = icons.ui.Check,
-      not_loaded = icons.misc.Ghost,
-      plugin = icons.ui.Package,
-      runtime = icons.misc.Vim,
-      source = icons.kind.StaticMethod,
-      start = icons.ui.Play,
-      list = {
-        icons.ui_sep.BigCircle,
-        icons.ui_sep.BigUnfilledCircle,
-        icons.ui_sep.Square,
-        icons.ui_sep.ChevronRight,
-      },
-    },
+    icons = require('config.icons').get 'ui',
   },
   checker = {
     enabled = true,

@@ -249,11 +249,11 @@ return {
       },
       -- search
       {
-        '<leader>s"',
+        '<leader>f"',
         function()
           Snacks.picker.registers()
         end,
-        desc = 'Registers',
+        desc = '[F]ind Registers',
       },
       {
         '<leader>s/',
@@ -263,14 +263,14 @@ return {
         desc = 'Search History',
       },
       {
-        '<leader>sa',
+        '<leader>fa',
         function()
           Snacks.picker.autocmds()
         end,
-        desc = 'Autocmds',
+        desc = '[F]ind [A]utocmds',
       },
       {
-        '<leader>sb',
+        '<C-/>',
         function()
           Snacks.picker.lines()
         end,
@@ -309,7 +309,7 @@ return {
         function()
           Snacks.picker.help()
         end,
-        desc = 'Help Pages',
+        desc = '[F]ind [H]elp',
       },
       {
         '<leader>fH',
@@ -330,14 +330,14 @@ return {
         function()
           Snacks.picker.jumps()
         end,
-        desc = 'Jumps',
+        desc = '[F]ind [J]umps',
       },
       {
         '<leader>fk',
         function()
           Snacks.picker.keymaps()
         end,
-        desc = 'Keymaps',
+        desc = '[F]ind [K]eymaps',
       },
       {
         '<leader>fl',
@@ -347,14 +347,14 @@ return {
         desc = 'Location List',
       },
       {
-        '<leader>sm',
+        '<leader>fm',
         function()
           Snacks.picker.marks()
         end,
-        desc = 'Marks',
+        desc = '[F]ind [M]arks',
       },
       {
-        '<leader>fm',
+        '<leader>sm',
         function()
           Snacks.picker.man()
         end,
@@ -442,7 +442,7 @@ return {
       {
         '<leader>sS',
         function()
-          Snacks.picker.lsp_workspace()
+          Snacks.picker.lsp_workspace_symbols()
         end,
         desc = 'LSP Workspace',
       },

@@ -10,95 +10,101 @@ return {
       desc = 'Open parent directory',
     },
   },
-  opts = {
-    default_file_explorer = true,
-    store_window_options = true,
-    delete_to_trash = true,
+  opts = function()
+    return {
+      default_file_explorer = true,
+      store_window_options = true,
+      delete_to_trash = true,
 
-    git = {
-      add = function(path)
-        return true
-      end,
-      mv = function(path)
-        return true
-      end,
-      rm = function(path)
-        return true
-      end,
-    },
-
-    keymaps = {
-      ['<C-s>'] = false,
-      ['<C-T>'] = false,
-      ['gd'] = {
-        desc = 'Toggle file details on list',
-        callback = function()
-          vim.g.detail = not vim.g.detail
-          if vim.g.detail then
-            require('oil').set_columns { 'icon', 'permissions', 'size', 'mtime' }
-          else
-            require('oil').set_columns { 'icon' }
-          end
+      git = {
+        add = function(path)
+          return true
+        end,
+        mv = function(path)
+          return true
+        end,
+        rm = function(path)
+          return true
         end,
       },
-      ['<F2>'] = {
-        desc = 'Open the entry under the cursor in a preview window, or close the preview window if already open',
-        callback = function()
-          local winid = require('oil.util').get_preview_win()
-          if winid then
-            -- hack'y way to reuse logic for dismissing preview window
-            require('oil.actions').preview.callback()
-            return
-          end
 
-          local w = vim.o.columns
-          local h = vim.o.lines * 2
-          local opts = {}
-          if w > h then
-            opts.vertical = true
-          else
-            opts.horizontal = true
-          end
-          require('oil').open_preview(opts)
+      keymaps = {
+        ['<C-s>'] = false,
+        ['<C-T>'] = false,
+        ['<C-y>'] = require('oil.actions').copy_entry_path,
+        ['<C-Y>'] = require('oil.actions').copy_entry_filename,
+        ['gd'] = {
+          desc = 'Toggle file details on list',
+          callback = function()
+            vim.g.detail = not vim.g.detail
+            if vim.g.detail then
+              require('oil').set_columns { 'icon', 'permissions', 'size', 'mtime' }
+            else
+              require('oil').set_columns { 'icon' }
+            end
+          end,
+        },
+        ['<F2>'] = {
+          desc = 'Open the entry under the cursor in a preview window, or close the preview window if already open',
+          callback = function()
+            local winid = require('oil.util').get_preview_win()
+            if winid then
+              -- hack'y way to reuse logic for dismissing preview window
+              require('oil.actions').preview.callback()
+              return
+            end
+
+            local w = vim.o.columns
+            local h = vim.o.lines * 2
+            local opts = {}
+            if w > h then
+              opts.vertical = true
+            else
+              opts.horizontal = true
+            end
+            require('oil').open_preview(opts)
+          end,
+        },
+        ['<F5>'] = require('oil.actions').refresh,
+      },
+
+      win_options = {
+        wrap = false,
+        number = true,
+        relativenumber = false,
+        signcolumn = 'yes',
+        cursorcolumn = false,
+        foldcolumn = '0',
+        spell = false,
+        foldtext = '',
+        foldmethod = 'manual',
+        list = false,
+        cursorline = false,
+        conceallevel = 3,
+        concealcursor = 'nivc',
+      },
+
+      view_options = {
+        show_hidden = true,
+        is_always_hidden = function(name, _)
+          return name:match '.git'
         end,
       },
-    },
-
-    win_options = {
-      wrap = false,
-      number = true,
-      relativenumber = false,
-      signcolumn = 'yes',
-      cursorcolumn = false,
-      foldcolumn = '0',
-      spell = false,
-      foldtext = '',
-      foldmethod = 'manual',
-      list = false,
-      cursorline = false,
-      conceallevel = 3,
-      concealcursor = 'nivc',
-    },
-
-    view_options = {
-      show_hidden = true,
-      is_always_hidden = function(name, _)
-        require 'oil'
-        return name:match '.git'
-      end,
-    },
-  },
-  init = function()
-    vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
+    }
+  end,
+  config = function(_, opts)
+    vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter', 'BufReadPre', 'BufReadPost' }, {
       pattern = 'oil://*',
       callback = function(params)
         local bufnr = params.buf
+
+        -- redo setup as its broken otherwise
+        require('oil').setup(opts)
+        pcall(vim.keymap.del, '', '<C-T>', { buffer = bufnr })
+
         if params.event == 'BufEnter' then
           -- double Q to close window
           vim.keymap.set('', 'qq', require('oil').close, { buffer = bufnr, desc = 'Close current window' })
-
-          -- disable <C-T>
-          pcall(vim.keymap.del, '', '<C-T>', { buffer = bufnr })
 
           -- toggle detailed list mode
           vim.keymap.set('', '<leader>tnnn', function()

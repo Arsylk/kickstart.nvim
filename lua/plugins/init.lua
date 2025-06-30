@@ -12,6 +12,7 @@ return {
         flavour = 'mocha',
         highlight_overrides = {
           all = {
+            SnacksPickerMatch = { link = 'Search' },
             SnacksNotifierInfo = { fg = colors.mauve },
             SnacksNotifierIconInfo = { fg = colors.mauve },
             SnacksNotifierTitleInfo = { fg = colors.mauve, style = { 'italic' } },

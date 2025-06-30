@@ -15,7 +15,7 @@ return {
         fish = { 'fish_indent' },
         bash = { 'fmtsh' },
         html = { 'prettier' },
-        python = { 'ruff_format' },
+        python = { 'ruff' },
         caddyfile = { 'caddyfile' },
         c = { 'clang-format' },
         java = {},

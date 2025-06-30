@@ -412,6 +412,7 @@ if vim.g.neovide then
   map('n', '<D-Z>', '<C-r>', { desc = 'which-key.ignore' }) -- Undo
   map('i', '<D-Z>', '<C-o><C-r>', { desc = 'which-key.ignore' }) -- Undo
   map('v', '<D-c>', '"+y', { desc = 'which-key.ignore' }) -- Copy
+  map('t', '<D-v>', '<C-\\><C-n>"+Pi', { noremap = true })
   -- map('n', '<D-v>', '"+p', { desc = 'which-key.ignore' }) -- Paste normal mode
   -- map('t', '<D-v>', '<ESC>"+Pi', { desc = 'which-key.ignore' }) -- Paste terminal mode
   -- map('l', '<D-v>', '<ESC>"+Pi', { desc = 'which-key.ignore' }) -- Paste terminal mode

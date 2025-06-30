@@ -4,7 +4,7 @@ return {
   {
     'saghen/blink.cmp',
     dependencies = { 'rafamadriz/friendly-snippets', 'xzbdmw/colorful-menu.nvim', 'L3MON4D3/LuaSnip' },
-    version = '*',
+    build = 'cargo build --release',
 
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
@@ -192,34 +192,6 @@ return {
     end,
   },
   {
-    'saghen/blink.pairs',
-    dependencies = 'saghen/blink.download',
-    version = '*',
-    -- build = 'cargo build --release',
-    opts = {
-      mappings = {
-        enabled = true,
-        pairs = {},
-      },
-      highlights = {
-        enabled = true,
-        groups = {
-          'rainbow1',
-          'rainbow2',
-          'rainbow3',
-          'rainbow4',
-          'rainbow5',
-          'rainbow6',
-        },
-        matchparen = {
-          enabled = true,
-          group = 'MatchParen',
-        },
-      },
-    },
-  },
-  {
-
     enabled = false,
     'saghen/blink.nvim',
     opts = {
