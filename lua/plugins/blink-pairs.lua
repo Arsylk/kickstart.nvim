@@ -1,7 +1,8 @@
 return {
   'saghen/blink.pairs',
   dependencies = 'saghen/blink.download',
-  build = 'cargo build --release',
+  version = '*',
+  -- build = 'cargo build --release',
   opts = {
     mappings = {
       enabled = false,

@@ -16,17 +16,15 @@ local function ai_whichkey(opts)
     { 'a', desc = 'argument' },
     { 'b', desc = ')]} block' },
     { 'c', desc = 'class' },
-    { 'd', desc = 'digit(s)' },
-    { 'e', desc = 'CamelCase / snake_case' },
+    { 'd', desc = 'diagnostic' },
+    { 'D', desc = 'digit' },
     { 'f', desc = 'function' },
-    { 'g', desc = 'entire file' },
+    { 'g', desc = 'buffer' },
     { 'i', desc = 'indent' },
     { 'o', desc = 'block, conditional, loop' },
     { 'q', desc = 'quote `"\'' },
     { 't', desc = 'tag' },
     { 'u', desc = 'use/call' },
-    { '{', desc = '{} block' },
-    { '}', desc = '{} with ws' },
   }
 
   local ret = { mode = { 'o', 'x' } }
@@ -59,12 +57,11 @@ end
 return {
   {
     'echasnovski/mini.ai',
-    enabled = false,
     dependencies = { 'echasnovski/mini.nvim', 'folke/which-key.nvim' },
     event = 'VeryLazy',
     config = function()
-      local mini = require 'mini'
       local ai = require 'mini.ai'
+      local gen_ai_spec = require('mini.extra').gen_ai_spec
       local opts = {
         n_lines = 500,
         custom_textobjects = {
@@ -75,8 +72,13 @@ return {
           f = ai.gen_spec.treesitter { a = '@function.outer', i = '@function.inner' },
           c = ai.gen_spec.treesitter { a = '@class.outer', i = '@class.inner' },
           t = { '<([%p%w]-)%f[^<%w][^<>]->.-</%1>', '^<.->().*()</[^/]->$' },
-          d = { '%f[%d]%d+' },
-          i = mini.ai_indent,
+          D = { '%f[%d]%d+' },
+          d = gen_ai_spec.diagnostic(),
+          g = gen_ai_spec.buffer(),
+          i = gen_ai_spec.indent(),
+          l = gen_ai_spec.line(),
+          n = gen_ai_spec.number(),
+          a = ai.gen_spec.argument(),
           u = ai.gen_spec.function_call(),
           U = ai.gen_spec.function_call { name_pattern = '[%w_]' },
         },

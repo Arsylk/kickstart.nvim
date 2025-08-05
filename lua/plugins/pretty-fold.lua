@@ -11,9 +11,6 @@ return {
         { '{', '}' },
         { '%(', ')' }, -- % to escape lua pattern char
         { '%[', ']' }, -- % to escape lua pattern char
-        { "'", "'" },
-        { '"', '"' },
-        { '`', '`' },
       },
     },
     config = function(_, opts)

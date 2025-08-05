@@ -19,7 +19,23 @@ return {
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('blink.cmp').get_lsp_capabilities())
-      capabilities.textDocument.completion.completionItem.snippetSupport = true
+      capabilities.textDocument.completion.completionItem = {
+        documentationFormat = { 'markdown', 'plaintext' },
+        snippetSupport = true,
+        preselectSupport = true,
+        insertReplaceSupport = true,
+        labelDetailsSupport = true,
+        deprecatedSupport = true,
+        commitCharactersSupport = true,
+        tagSupport = { valueSet = { 1 } },
+        resolveSupport = {
+          properties = {
+            'documentation',
+            'detail',
+            'additionalTextEdits',
+          },
+        },
+      }
       capabilities.textDocument.callHierarchy.dynamicRegistration = true
 
       vim.lsp.config('lua_ls', {
@@ -96,82 +112,68 @@ return {
         },
       })
 
+      -- Python LSP Configuration for Ghidra Development
       vim.lsp.config('pylsp', {
         capabilities = capabilities,
         cmd = { 'pylsp' },
         filetypes = { 'python' },
-        root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', 'Pipfile', '.git' },
-        settings = {
-          pylsp = {
-            plugins = {
-              -- Code style and formatting
-              pycodestyle = { enabled = false }, -- Disable in favor of ruff
-              pydocstyle = { enabled = false }, -- Disable in favor of ruff
-              pyflakes = { enabled = false }, -- Disable in favor of ruff
-              mccabe = { enabled = false }, -- Disable in favor of ruff
-
-              -- Enable useful plugins
-              pylsp_mypy = {
-                enabled = true,
-                live_mode = false,
-                strict = false,
-              },
-              rope_autoimport = { enabled = true },
-              rope_completion = { enabled = true },
-
-              -- Refactoring
-              rope = { enabled = true },
-
-              -- Code completion
-              jedi_completion = {
-                enabled = true,
-                include_params = true,
-                include_class_objects = true,
-                fuzzy = true,
-              },
-              jedi_hover = { enabled = true },
-              jedi_references = { enabled = true },
-              jedi_signature_help = { enabled = true },
-              jedi_symbols = { enabled = true },
-            },
-          },
-        },
-      })
-
-      vim.lsp.config('ruff', {
-        cmd = { 'ruff', 'server' },
-        filetypes = { 'python' },
-        root_markers = { 'pyproject.toml', 'ruff.toml', '.ruff.toml', '.git' },
-        init_options = {
-          settings = {
-            -- Ruff configuration
-            args = {
-              '--config',
-              'pyproject.toml',
-            },
-            logLevel = 'info',
-          },
+        root_markers = {
+          'ghidra_scripts',
+          'data/scripts',
+          '.ghidra',
+          'pyproject.toml',
+          'setup.py',
+          'requirements.txt',
+          '.git',
         },
       })
 
       vim.lsp.config('basedpyright', {
+        capabilities = capabilities,
         cmd = { 'basedpyright-langserver', '--stdio' },
         filetypes = { 'python' },
-        root_markers = { 'pyrightconfig.json', 'pyproject.toml', 'setup.py', '.git' },
+        root_markers = {
+          'ghidra_scripts',
+          'data/scripts',
+          '.ghidra',
+          'pyproject.toml',
+          'setup.py',
+          'requirements.txt',
+          '.git',
+        },
         settings = {
-          basedpyright = {
-            analysis = {
-              typeCheckingMode = 'basic',
-              autoSearchPaths = true,
-              useLibraryCodeForTypes = true,
-              autoImportCompletions = true,
-              diagnosticMode = 'workspace',
-            },
+          python = {
+            pythonPath = '.venv/bin/python',
           },
         },
       })
 
-      vim.lsp.enable { 'biome', 'ts_ls', 'lua_ls', 'jsonls', 'yamlls', 'basedpyright', 'ruff' }
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'java' },
+        desc = 'Auto trigger java lsp',
+        callback = function(params)
+          vim.schedule(function()
+            require('java').setup()
+            vim.lsp.config('jdtls', {
+              settings = {
+                java = {
+                  configuration = {
+                    runtimes = {
+                      {
+                        name = 'Java-24',
+                        path = '/opt/homebrew/Cellar/openjdk/24.0.1/libexec/openjdk.jdk/Contents/Home',
+                        default = true,
+                      },
+                    },
+                  },
+                },
+              },
+            })
+          end)
+        end,
+      })
+
+      vim.lsp.enable { 'biome', 'ts_ls', 'lua_ls', 'jsonls', 'yamlls', 'pylsp', 'basedpyright', 'jdtls' }
 
       -- kotlin_language_server = {
       --   settings = {

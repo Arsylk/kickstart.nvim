@@ -8,14 +8,14 @@ return {
         pattern = 'AutoSaveEnable',
         group = group,
         callback = function(_)
-          vim.g.autosave = true
+          vim.b.autosave = true
         end,
       })
       vim.api.nvim_create_autocmd('User', {
         pattern = 'AutoSaveDisable',
         group = group,
         callback = function(_)
-          vim.g.autosave = false
+          vim.b.autosave = false
         end,
       })
     end,
@@ -24,11 +24,11 @@ return {
       callbacks = {
         enabling = function()
           vim.notify('autosave on ', vim.log.levels.WARN)
-          vim.g.autosave = true
+          vim.b.autosave = true
         end,
         disabling = function()
           vim.notify('autosave off', vim.log.levels.WARN)
-          vim.g.autosave = false
+          vim.b.autosave = false
         end,
       },
     },

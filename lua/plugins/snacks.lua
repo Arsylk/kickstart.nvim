@@ -167,6 +167,20 @@ return {
         end,
         desc = 'Recent',
       },
+      {
+        '<leader>fd',
+        function()
+          Snacks.picker.diagnostics_buffer()
+        end,
+        desc = 'Diagnostics',
+      },
+      {
+        '<leader>fD',
+        function()
+          Snacks.picker.diagnostics()
+        end,
+        desc = 'Diagnostics Workspace',
+      },
       -- git
       {
         '<leader>gb',

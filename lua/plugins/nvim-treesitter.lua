@@ -7,6 +7,8 @@ return {
       'chrisgrieser/nvim-various-textobjs',
     },
     build = ':TSUpdate',
+    --- @type TSConfig
+    ---@diagnostic disable-next-line: missing-fields
     opts = {
       ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'vim', 'vimdoc' },
       auto_install = true,
@@ -19,6 +21,15 @@ return {
       indent = {
         enable = true,
         disable = { 'ruby' },
+      },
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = 'gnn',
+          node_incremental = 'grn',
+          scope_incremental = 'grc',
+          node_decremental = 'grm',
+        },
       },
       textobjects = {
         select = {

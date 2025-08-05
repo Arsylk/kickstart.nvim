@@ -25,24 +25,25 @@ local clamp = function(value, min, max)
 end
 
 -- The good 'ol keybinds
-map('n', { '<C-c>', '<D-c>' }, '<cmd>%y+<CR>', { noremap = true, desc = 'File copy whole' })
+map('n', { '<C-c>', '<D-c>' }, '<Cmd>%y+<CR>', { noremap = true, desc = 'File copy whole' })
 map('n', { '<C-a>', '<D-a>' }, 'gg^vG$', { desc = 'Select all', noremap = true, silent = true })
-map({ 'i', 'n' }, { '<C-s>', '<D-s>' }, '<cmd>w<CR>', { noremap = true, desc = 'File save' })
+map({ 'i', 'n' }, { '<C-s>', '<D-s>' }, '<Cmd>w<CR>', { noremap = true, desc = 'File save' })
+map({ 'i', 'n' }, { '<C-S>', '<D-S>' }, '<Cmd>w!<CR>', { noremap = true, desc = 'File save force' })
 
-map('c', { '<C-z>', '<D-z>' }, '<C-r>u', { desc = 'Undo' }) -- Undo
 map('n', { '<C-z>', '<D-z>' }, 'u', { desc = 'Undo' }) -- Undo
 map('i', { '<C-z>', '<D-z>' }, '<C-o>u', { desc = 'Undo' }) -- Undo
-map('t', { '<C-z>', '<D-z>' }, '<C-\\><C-n><C-z>', { desc = 'Undo' }) -- Undo
-
-map('c', { '<C-Z>', '<D-Z>' }, '<C-o><C-r>', { desc = 'Redo' }) -- Redo
-map('n', { '<C-Z>', '<D-Z>' }, '<C-r>', { desc = 'Redo' }) -- Redo
-map('i', { '<C-Z>', '<D-Z>' }, '<C-o><C-r>', { desc = 'Redo' }) -- Redo
-map('t', { '<C-z>', '<D-Z>' }, '<C-\\><C-n><C-z>', { desc = 'Undo' }) -- Undo
+-- map('c', { '<C-z>', '<D-z>' }, '<C-r>u', { desc = 'Undo' }) -- Undo
+-- map('t', { '<C-z>', '<D-z>' }, '<C-\\><C-n><C-z>', { desc = 'Undo' }) -- Undo
+--
+-- map('n', { '<C-Z>', '<D-Z>' }, '<C-r>', { desc = 'Redo' }) -- Redo
+-- map('i', { '<C-Z>', '<D-Z>' }, '<C-o><C-r>', { desc = 'Redo' }) -- Redo
+-- map('c', { '<C-Z>', '<D-Z>' }, '<C-o><C-r>', { desc = 'Redo' }) -- Redo
+-- map('t', { '<C-z>', '<D-Z>' }, '<C-\\><C-n><C-z>', { desc = 'Undo' }) -- Undo
 
 -- Activate Ctrl+V as paste
-map('c', { '<C-v>', '<D-v>' }, '<c-r>0', { noremap = true, desc = 'Command paste' })
+map('c', { '<C-v>', '<D-v>' }, '<C-r>+', { noremap = true, desc = 'Command paste' })
 map('n', { '<C-v>', '<D-v>' }, '"+p', { noremap = true, desc = 'Command paste' })
-map('i', { '<C-v>', '<D-v>' }, '<c-r>0', { noremap = true, desc = 'Command paste' })
+map('i', { '<C-v>', '<D-v>' }, '<C-r>+', { noremap = true, desc = 'Command paste' })
 map('t', { '<C-v>', '<D-v>' }, '<C-\\><C-n>"+Pi', { noremap = true, desc = 'Command paste' })
 
 -- Force close all windowns
@@ -138,7 +139,6 @@ vim.api.nvim_create_autocmd('FileType', {
             break
           end
         end
-        log { win = winnr, last = lastwin }
         if lastwin then
           local lastfile = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(lastwin))
           if lastfile and lastfile ~= '' then
@@ -171,7 +171,7 @@ vim.api.nvim_create_autocmd('FileType', {
         set = function(state)
           local term = get_term()
           if term then
-            term.auto_scroll = not state
+            term.auto_scroll = state
           end
         end,
       })
@@ -228,24 +228,6 @@ vim.keymap.set('n', 'zM', function()
   require('ufo').closeAllFolds()
 end, { desc = 'Close all folds' })
 
--- LSP mappings
-map('n', '<leader><leader>', '<Cmd>FzfLua buffers<CR>', { desc = '[ ] Find existing buffers' })
-map('n', '<leader>fj', '<Cmd>FzfLua jumps<CR>', { desc = '[F]ind [J]umps' })
-map('n', '<leader>fh', '<Cmd>FzfLua help<CR>', { desc = '[F]ind [H]elp' })
-map('n', '<leader>fh', '<Cmd>FzfLua highlights<CR>', { desc = '[F]ind [H]ighlights' })
-map('n', '<leader>fk', '<Cmd>FzfLua keymaps<CR>', { desc = '[F]ind [K]eymaps' })
-map('n', '<leader>ff', '<Cmd>FzfLua files<CR>', { desc = '[F]ind [F]iles' })
-map('n', '<leader>fs', '<Cmd>FzfLua builtin<CR>', { desc = '[F]ind [S]elect FzfLua' })
-map('n', '<leader>fw', '<Cmd>FzfLua grep_cword<CR>', { desc = '[F]ind current [W]ord' })
-map('n', '<leader>fg', '<Cmd>FzfLua live_grep<CR>', { desc = '[F]ind by [G]rep' })
-map('n', '<leader>fd', '<Cmd>FzfLua diagnostics_document<CR>', { desc = '[F]ind [D]iagnostics' })
-map('n', '<leader>fr', '<Cmd>FzfLua resume<CR>', { desc = '[F]ind [R]esume' })
-map('n', '<leader>f.', '<Cmd>FzfLua oldfiles<CR>', { desc = '[F]ind Recent Files [.]' })
-map('n', '<leader>fn', '<Cmd>FzfLua files cwd=$HOME/.config/nvim<CR>', { desc = '[F]ind [N]eovim files' })
-map('n', '<leader>fy', function()
-  require 'neoclip.fzf'()
-end, { desc = '[F]ind [Y]ank History' })
-
 -- LSP buffer specific mappings
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('custom-lsp-attach', { clear = true }),
@@ -255,18 +237,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 
     local fzf = require 'fzf-lua'
+
     lspmap('<leader>cl', vim.lsp.codelens.run, '[C]ode [L]ens')
-    lspmap('<leader>ca', fzf.lsp_code_actions, '[C]ode [A]ctions')
+    lspmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ctions')
     lspmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
 
     lspmap('gf', fzf.lsp_finder, '[G]oto Lsp [F]inder')
-    lspmap('gd', fzf.lsp_definitions, '[G]oto [D]efinition')
-    lspmap('gr', fzf.lsp_references, '[G]oto [R]eferences')
-    lspmap('gi', fzf.lsp_implementations, '[G]oto [I]mplementation')
-    lspmap('gt', fzf.lsp_typedefs, '[G]oto [T]ype Definition')
-    lspmap('gD', fzf.lsp_declarations, '[G]oto [D]eclarations')
-    lspmap('gic', fzf.lsp_incoming_calls, '[G]oto [I]ncoming [C]alls')
-    lspmap('goc', fzf.lsp_outgoing_calls, '[G]oto [O]utgoing [C]alls')
+    lspmap('gd', Snacks.picker.lsp_definitions, '[G]oto [D]efinition')
+    lspmap('gr', Snacks.picker.lsp_references, '[G]oto [R]eferences')
+    lspmap('gi', Snacks.picker.lsp_implementations, '[G]oto [I]mplementation')
+    lspmap('gt', Snacks.picker.lsp_type_definitions, '[G]oto [T]ype Definition')
+    lspmap('gD', Snacks.picker.lsp_declarations, '[G]oto [D]eclarations')
 
     map({ 'n', 'i' }, '<A-k>', vim.lsp.buf.hover, { noremap = true })
   end,
@@ -286,7 +267,7 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
       if vim.wo.diff then
         vim.cmd.normal { ']c', bang = true }
       else
-        gitsigns.nav_hunk 'next'
+        require('gitsigns.actions.nav').nav_hunk('next', { wrap = true })
       end
     end, 'next [c]hange')
 
@@ -294,7 +275,7 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
       if vim.wo.diff then
         vim.cmd.normal { '[c', bang = true }
       else
-        gitsigns.nav_hunk 'prev'
+        require('gitsigns.actions.nav').nav_hunk('prev', { wrap = true })
       end
     end, 'previous [c]hange')
 
@@ -343,6 +324,19 @@ vim.api.nvim_create_autocmd({ 'BufFilePost', 'BufRead', 'BufNewFile', 'BufWriteP
 vim.api.nvim_create_autocmd('User', {
   pattern = 'VeryLazy',
   callback = function()
+    -- Picker keybinds
+    map('n', '<leader><leader>', Snacks.picker.buffers, { desc = '[ ] Find existing buffers' })
+    map('n', '<leader>fj', Snacks.picker.jumps, { desc = '[F]ind [J]umps' })
+    map('n', '<leader>fh', Snacks.picker.help, { desc = '[F]ind [H]elp' })
+    map('n', '<leader>fH', Snacks.picker.highlights, { desc = '[F]ind [H]ighlights' })
+    map('n', '<leader>fk', Snacks.picker.keymaps, { desc = '[F]ind [K]eymaps' })
+    map('n', '<leader>ff', Snacks.picker.files, { desc = '[F]ind [F]iles' })
+    map('n', '<leader>fs', Snacks.picker.pick, { desc = '[F]ind [S]elect Picker' })
+    map('n', '<leader>fw', Snacks.picker.grep_word, { desc = '[F]ind current [W]ord' })
+    map('n', '<leader>fg', Snacks.picker.grep, { desc = '[F]ind by [G]rep' })
+    map('n', '<leader>fy', function()
+      require 'neoclip.fzf'()
+    end, { desc = '[F]ind [Y]ank History' })
     -- Autopair toggle
     local ok, blink = pcall(require, 'blink.cmp.config')
     if ok then
@@ -374,7 +368,7 @@ vim.api.nvim_create_autocmd('User', {
       .new({
         name = 'Autosave',
         get = function()
-          return vim.g.autosave
+          return vim.b.autosave
         end,
         set = function(state)
           if state then
@@ -406,20 +400,6 @@ vim.keymap.set('n', '<F7>', function()
 end, { desc = 'Debug: See last session result.' })
 
 if vim.g.neovide then
-  map('n', '<D-s>', ':w<CR>', { desc = 'which-key.ignore' }) -- Save
-  map('n', '<D-z>', 'u', { desc = 'which-key.ignore' }) -- Undo
-  map('i', '<D-z>', '<C-o>u', { desc = 'which-key.ignore' }) -- Undo
-  map('n', '<D-Z>', '<C-r>', { desc = 'which-key.ignore' }) -- Undo
-  map('i', '<D-Z>', '<C-o><C-r>', { desc = 'which-key.ignore' }) -- Undo
-  map('v', '<D-c>', '"+y', { desc = 'which-key.ignore' }) -- Copy
-  map('t', '<D-v>', '<C-\\><C-n>"+Pi', { noremap = true })
-  -- map('n', '<D-v>', '"+p', { desc = 'which-key.ignore' }) -- Paste normal mode
-  -- map('t', '<D-v>', '<ESC>"+Pi', { desc = 'which-key.ignore' }) -- Paste terminal mode
-  -- map('l', '<D-v>', '<ESC>"+Pi', { desc = 'which-key.ignore' }) -- Paste terminal mode
-  -- map('v', '<D-v>', '"+P', { desc = 'which-key.ignore' }) -- Paste visual mode
-  -- map('c', '<D-v>', '<C-R>+', { desc = 'which-key.ignore' }) -- Paste command mode
-  -- map('i', '<D-v>', '<ESC>l"+Pli', { desc = 'which-key.ignore' }) -- Paste insert mode
-
   vim.g.neovide_window_blurred = true
   vim.g.neovide_scale_factor = 1.0
   local change_scale_factor = function(delta)
@@ -437,25 +417,23 @@ if vim.g.neovide then
   for _, key in pairs { 'C', 'D' } do
     map('n', string.format('<%s-]>', key), function()
       change_transparency(0.05)
-    end, { desc = first_desc 'Increase transparency' })
+    end, { desc = 'Increase transparency' })
     map('n', string.format('<%s-[>', key), function()
       change_transparency(-0.05)
-    end, { desc = first_desc 'Decrease transparency' })
+    end, { desc = 'Decrease transparency' })
     map('n', string.format('<%s-+>', key), function()
       change_scale_factor(1.1)
-    end, { desc = first_desc 'Increase font size' })
+    end, { desc = 'Increase font size' })
     map('n', string.format('<%s-_>', key), function()
       change_scale_factor(1 / 1.1)
-    end, { desc = first_desc 'Decrease font size' })
+    end, { desc = 'Decrease font size' })
     map('n', string.format('<%s-)>', key), function()
       vim.g.neovide_scale_factor = 1.0
-    end, { desc = first_desc 'Reset font size' })
+    end, { desc = 'Reset font size' })
   end
 end
 map('v', { '<C-r>n', '<D-r>n' }, function()
   local register = 'z'
-  local start_pos = vim.fn.getpos "'<"
-  local end_pos = vim.fn.getpos "'>"
 
   -- Yank and delete
   vim.cmd('normal! "' .. register .. 'y')

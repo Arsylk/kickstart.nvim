@@ -8,7 +8,7 @@ return {
       formatters_by_ft = {
         ['_'] = { 'trim_whitespace' },
         lua = { 'stylua' },
-        javascript = { 'biome' },
+        javascript = { 'biome', 'prettier' },
         typescript = { 'biome' },
         json = { 'biome' },
         sh = { 'fmtsh' },

@@ -147,7 +147,7 @@ local icons = {
 
 -- general neovide related configs
 if vim.g.neovide then
-  vim.o.guifont = 'JetBrains Mono NL'
+  vim.o.guifont = 'FiraCode Nerd Font'
   vim.g.neovide_padding_right = 12
   vim.g.neovide_padding_left = 12
   vim.g.neovide_padding_bottom = 4

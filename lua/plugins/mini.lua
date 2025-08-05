@@ -6,38 +6,6 @@ return {
       require('mini.colors').setup()
       -- Setup icons
       require('mini.icons').setup()
-      -- Better Around/Inside textobjects
-      -- Examples:
-      --  - va)  - [V]isually select [A]round [)]paren
-      --  - yinq - [Y]ank [I]nside [N]ext [']quote
-      --  - ci'  - [C]hange [I]nside [']quote
-      local gen_ai_spec = require('mini.extra').gen_ai_spec
-      local ai = require 'mini.ai'
-      ai.setup {
-        n_lines = 500,
-        custom_textobjects = {
-          o = ai.gen_spec.treesitter {
-            a = { '@block.outer', '@conditional.outer', '@loop.outer' },
-            i = { '@block.inner', '@conditional.inner', '@loop.inner' },
-          },
-          f = ai.gen_spec.treesitter { a = '@function.outer', i = '@function.inner' },
-          c = ai.gen_spec.treesitter { a = '@class.outer', i = '@class.inner' },
-          t = { '<([%p%w]-)%f[^<%w][^<>]->.-</%1>', '^<.->().*()</[^/]->$' },
-          d = { '%f[%d]%d+' },
-          e = {
-            { '%u[%l%d]+%f[^%l%d]', '%f[%S][%l%d]+%f[^%l%d]', '%f[%P][%l%d]+%f[^%l%d]', '^[%l%d]+%f[^%l%d]' },
-            '^().*()$',
-          },
-          D = gen_ai_spec.diagnostic(),
-          b = gen_ai_spec.buffer(),
-          i = gen_ai_spec.indent(),
-          l = gen_ai_spec.line(),
-          n = gen_ai_spec.number(),
-          u = ai.gen_spec.function_call(),
-          U = ai.gen_spec.function_call { name_pattern = '[%w_]' },
-        },
-      }
-
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
@@ -49,7 +17,9 @@ return {
       require('mini.hipatterns').setup {
         highlighters = {
           -- Highlight standalone (`#rrggbb`) using that color
+          -- #ff00aa
           hex_color = require('mini.hipatterns').gen_highlighter.hex_color(),
+          -- #cb9
           hex_short_color = {
             pattern = '#%x%x%x%f[^a-zA-Z0-9]',
             group = function(_, _, data)
@@ -68,6 +38,7 @@ return {
               return MiniHipatterns.compute_hex_color_group(correct, 'bg')
             end,
           },
+          -- Rgb(116, 199, 236)
           rgb = {
             pattern = '()Rgb%(%s*%d+,%s*%d+,%s*%d+%s*%)()',
             group = function(_, _, data)

@@ -1,6 +1,7 @@
 return {
   {
     'mfussenegger/nvim-jdtls',
+    enabled = false,
     dependencies = { 'mfussenegger/nvim-dap' },
     ft = { 'java' },
     config = function()
