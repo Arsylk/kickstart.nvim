@@ -47,10 +47,13 @@ map('i', { '<C-v>', '<D-v>' }, '<C-r>+', { noremap = true, desc = 'Command paste
 map('t', { '<C-v>', '<D-v>' }, '<C-\\><C-n>"+Pi', { noremap = true, desc = 'Command paste' })
 
 -- Force close all windowns
-map('', '<S-Esc><S-Esc><Del>', '<Cmd>qa!<CR>', { nowait = true, noremap = true, desc = 'Instant Quit' })
+map('', '<Esc><Esc><Del>', '<Cmd>qa!<CR>', { nowait = true, noremap = true, desc = 'Instant Quit' })
 
 -- Display diagnostics under cursor
 map('n', { '<C-d>', '<D-d>' }, vim.diagnostic.open_float, { desc = 'Show diagnostics under the cursor' })
+
+-- Disable 'S' removing text
+map({ 'n', 'x' }, 's', '<Nop>')
 
 -- Edit path under cursor
 map('n', 'ge', function()
@@ -78,9 +81,9 @@ end, { desc = ' rip substitute' })
 
 -- Move between windows with arrows
 -- map('n', '<C-Left>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
--- map('n', '<C-Right>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+-- map('n', '<C-Right>','<C-w><C-l>', { desc = 'Move focus to the right window' })
 -- map('n', '<C-Down>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
--- map('n', '<C-Up>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- map('n', '<C-Up>',   '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 map('n', '<C-w>n', '<Cmd>new<CR>', { desc = 'Open new window split' })
 map('n', '<C-w>N', '<Cmd>vnew<CR>', { desc = 'Open new window split vertical' })
 
@@ -178,6 +181,14 @@ vim.api.nvim_create_autocmd('FileType', {
       :map '<leader>ts'
   end,
 })
+
+-- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
+map('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+map('t', '<C-w><C-w>', '<C-\\><C-n><C-w>w', { desc = 'Exit terminal mode', noremap = true })
+map('t', '<C-w><Up>', '<C-\\><C-n><C-w>k', { desc = 'Exit terminal mode', noremap = true })
+map('t', '<C-w><Left>', '<C-\\><C-n><C-w>h', { desc = 'Exit terminal mode', noremap = true })
+map('t', '<C-w><Right>', '<C-\\><C-n><C-w>l', { desc = 'Exit terminal mode', noremap = true })
+map('t', '<C-w><Down>', '<C-\\><C-n><C-w>j', { desc = 'Exit terminal mode', noremap = true })
 
 -- Break inserted text into smaller undo units
 local undo_ch = { ',', '.', '!', '?', ';', ':' }

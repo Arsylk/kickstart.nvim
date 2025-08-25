@@ -28,21 +28,21 @@ return {
               return MiniHipatterns.compute_hex_color_group(correct, 'bg')
             end,
           },
-          hex_6_color = {
-            -- 43fcA0
-            -- #define
-            pattern = '%f[%w]%x%x%x%x%x%x%f[%X]',
-            group = function(_, _, data)
-              local match = data.full_match
-              local correct = '#' .. match:sub(1, 2) .. match:sub(3, 4) .. match:sub(5, 6)
-              return MiniHipatterns.compute_hex_color_group(correct, 'bg')
-            end,
-          },
+          -- hex_6_color = {
+          --   -- 43fcA0
+          --   -- #define
+          --   pattern = '%f[%w]%x%x%x%x%x%x%f[%X]',
+          --   group = function(_, _, data)
+          --     local match = data.full_match
+          --     local correct = '#' .. match:sub(1, 2) .. match:sub(3, 4) .. match:sub(5, 6)
+          --     return MiniHipatterns.compute_hex_color_group(correct, 'bg')
+          --   end,
+          -- },
           -- Rgb(116, 199, 236)
-          rgb = {
-            pattern = '()Rgb%(%s*%d+,%s*%d+,%s*%d+%s*%)()',
-            group = function(_, _, data)
-              local _, _, r, g, b = data.full_match:find 'Rgb%(%s*(%d+),%s*(%d+),%s*(%d+)%s*%)'
+          rgb_num = {
+            pattern = '%f[%w][Aa]?[Rr][Gg][Bb]%(%s*()%d+,%s*%d+,%s*%d+()%s*%)',
+            group = function(_, sel, full)
+              local _, _, r, g, b = sel:find '(%d+),%s*(%d+),%s*(%d+)'
               local correct = string.format('#%02x%02x%02x', r, g, b)
               if correct:len() ~= 7 then
                 return
@@ -52,6 +52,16 @@ return {
             extmark_opts = {
               priority = 210,
             },
+          },
+          -- rgba(7E6C55)
+          rgba_hex = {
+            pattern = '%f[%w][Rr][Gg][Bb][Aa]?%(%s*()#?%x?%x?%x%x%x%x%x%x()%s*%)',
+            group = function(_, sel, full)
+              local _, _, hex = sel:find '(%x%x%x%x%x%x)$'
+              local correct = string.format('#%s', hex)
+
+              return MiniHipatterns.compute_hex_color_group(correct, 'bg')
+            end,
           },
         },
       }

@@ -62,7 +62,21 @@ return {
         },
         tabline = {
           lualine_a = {},
-          lualine_b = {},
+          lualine_b = {
+            {
+              function()
+                return require('luapad.statusline').lightline_msg()
+              end,
+              color = function()
+                if require('luapad.statusline').status() == 'ok' then
+                  return 'lualine_b_diff_added_command'
+                end
+                return 'lualine_b_diagnostics_error_command'
+              end,
+              separator = { left = '', right = '' },
+              draw_empty = false,
+            },
+          },
           lualine_c = {
             -- '%=',
             {
@@ -72,10 +86,9 @@ return {
               symbols = {
                 modified = '󰷫', -- Text to show when the file is modified.
                 readonly = '󰌾', -- Text to show when the file is non-modifiable or readonly.
-                unnamed = '[No Name]', -- Text to show for unnamed buffers.
-                newfile = '[New]', -- Text to show for newly created file before first write
+                unnamed = '[no name]', -- Text to show for unnamed buffers.
+                newfile = '[new]', -- Text to show for newly created file before first write
               },
-              separator = { left = '' },
             },
           },
           lualine_x = {},
@@ -89,7 +102,6 @@ return {
             },
             {
               'fileformat',
-              separator = { right = '' },
               color = function()
                 return 'lualine_c_normal'
               end,
@@ -110,7 +122,7 @@ return {
                 modified = '󰷫', -- Text to show when the file is modified.
                 readonly = '󰌾', -- Text to show when the file is non-modifiable or readonly.
                 unnamed = '[no name]', -- Text to show for unnamed buffers.
-                newfile = '[New]', -- Text to show for newly created file before first write
+                newfile = '[new]', -- Text to show for newly created file before first write
               },
             },
           },
@@ -125,11 +137,11 @@ return {
                 if line then
                   local severity = line.severity
                   local hl = 'lualine_b_diagnostics_info_inactive'
-                  if severity == vim.log.levels.DEBUG then
+                  if severity == 3 then
                     hl = 'lualine_b_diagnostics_hint_inactive'
-                  elseif severity == vim.log.levels.WARN then
+                  elseif severity == 2 then
                     hl = 'lualine_b_diagnostics_warn_inactive'
-                  elseif severity == vim.log.levels.ERROR then
+                  elseif severity == 1 then
                     hl = 'lualine_b_diagnostics_error_inactive'
                   end
                   return hl
